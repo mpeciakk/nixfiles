@@ -11,5 +11,7 @@
     zoxide
     carapace
     bat
+    git
+    neovim
   ];
 }
