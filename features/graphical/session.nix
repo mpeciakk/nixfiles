@@ -23,6 +23,8 @@
     settings.default_session.command = "${pkgs.tuigreet}/bin/tuigreet --cmd 'uwsm start niri-session'";
   };
 
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+
   security.soteria.enable = true;
   systemd.user.services.polkit-soteria.serviceConfig.ExecStart = lib.mkForce (pkgs.writeShellScript "soteria-session" ''
     export XDG_SESSION_ID=$(${pkgs.systemd}/bin/loginctl show-user "$USER" -p Display --value)

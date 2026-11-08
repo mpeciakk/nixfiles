@@ -1,8 +1,4 @@
-{
-  pkgs,
-  inputs,
-  ...
-}: {
+{pkgs, ...}: {
   hjem.users.m.packages = with pkgs; [
     kitty
     quickshell
@@ -26,6 +22,7 @@
     uv
     zed-editor
     legcord
-    inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default
+    mpv
+    ffmpeg
   ];
 }

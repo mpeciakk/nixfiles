@@ -17,6 +17,8 @@ in {
       // link "kitty" ["kitty.conf" "theme.conf"]
       // link "nushell" ["config.nu" "env.nu" "init.nu" "completions.nu" "aliases.nu"]
       // link "uwsm" ["env"]
+      // link "mpv" ["mpv.conf"]
+      // link "dotfiles" ["config.json"]
       // {"quickshell".source = "${dot}/quickshell";}
       // builtins.listToAttrs (map (n: {
         name = "git/${n}";
