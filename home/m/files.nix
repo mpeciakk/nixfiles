@@ -1,5 +1,9 @@
-let
+{pkgs, ...}: let
   dot = "/home/m/dotfiles/config";
+  shellInit = name: cmd: {
+    source = pkgs.runCommand "${name}-init.nu" {} "HOME=$TMPDIR ${cmd} > $out";
+    clobber = true;
+  };
   link = dir: names:
     builtins.listToAttrs (map (n: {
         name = "${dir}/${n}";
@@ -14,6 +18,11 @@ in {
       // link "nushell" ["config.nu" "env.nu" "init.nu" "completions.nu" "aliases.nu"]
       // link "uwsm" ["env"]
       // {"quickshell".source = "${dot}/quickshell";};
+
+    xdg.data.files = {
+      "zoxide/init.nu" = shellInit "zoxide" "${pkgs.zoxide}/bin/zoxide init nushell";
+      "atuin/init.nu" = shellInit "atuin" "${pkgs.atuin}/bin/atuin init nu";
+    };
 
     systemd.services.quickshell = {
       description = "Quickshell";
