@@ -17,7 +17,14 @@ in {
       // link "kitty" ["kitty.conf" "theme.conf"]
       // link "nushell" ["config.nu" "env.nu" "init.nu" "completions.nu" "aliases.nu"]
       // link "uwsm" ["env"]
-      // {"quickshell".source = "${dot}/quickshell";};
+      // {"quickshell".source = "${dot}/quickshell";}
+      // builtins.listToAttrs (map (n: {
+        name = "git/${n}";
+        value = {
+          source = "${dot}/git/${n}";
+          clobber = true;
+        };
+      }) ["config" "ignore"]);
 
     xdg.data.files = {
       "zoxide/init.nu" = shellInit "zoxide" "${pkgs.zoxide}/bin/zoxide init nushell";
