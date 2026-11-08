@@ -11,6 +11,7 @@
       use-xdg-base-directories = true;
       trusted-users = ["@wheel"];
       auto-optimise-store = true;
+      warn-dirty = false;
     };
 
     gc = {
