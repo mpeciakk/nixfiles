@@ -1,5 +1,6 @@
 {
   inputs,
+  lib,
   pkgs,
   ...
 }: {
@@ -21,6 +22,12 @@
     enable = true;
     settings.default_session.command = "${pkgs.tuigreet}/bin/tuigreet --cmd 'uwsm start niri-session'";
   };
+
+  security.soteria.enable = true;
+  systemd.user.services.polkit-soteria.serviceConfig.ExecStart = lib.mkForce (pkgs.writeShellScript "soteria-session" ''
+    export XDG_SESSION_ID=$(${pkgs.systemd}/bin/loginctl show-user "$USER" -p Display --value)
+    exec ${lib.getExe pkgs.soteria}
+  '');
 
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.greetd.enableGnomeKeyring = true;
