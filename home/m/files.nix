@@ -22,6 +22,7 @@ in {
       // link "herdr" ["config.toml" "plugins/config/herdr-navigator/config.toml"]
       // link "herdr-automatic-rename" ["config.sh"]
       // {"quickshell".source = "${dot}/quickshell";}
+      // {"wireplumber".source = "${dot}/wireplumber";}
       // builtins.listToAttrs (map (n: {
         name = "git/${n}";
         value = {
