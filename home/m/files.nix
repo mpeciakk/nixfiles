@@ -19,6 +19,8 @@ in {
       // link "uwsm" ["env"]
       // link "mpv" ["mpv.conf"]
       // link "dotfiles" ["config.json"]
+      // link "herdr" ["config.toml" "plugins/config/herdr-navigator/config.toml"]
+      // link "herdr-automatic-rename" ["config.sh"]
       // {"quickshell".source = "${dot}/quickshell";}
       // builtins.listToAttrs (map (n: {
         name = "git/${n}";
@@ -27,6 +29,11 @@ in {
           clobber = true;
         };
       }) ["config" "ignore"]);
+
+    files = builtins.listToAttrs (map (n: {
+      name = ".local/bin/${n}";
+      value.source = "/home/m/dotfiles/bin/${n}";
+    }) ["herdr-here" "herdr-ssh" "mutagen-check" "mutagen-sessions" "claude-baseline"]);
 
     xdg.data.files = {
       "zoxide/init.nu" = shellInit "zoxide" "${pkgs.zoxide}/bin/zoxide init nushell";

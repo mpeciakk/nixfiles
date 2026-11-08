@@ -25,5 +25,12 @@
     mpv
     ffmpeg
     prismlauncher
+    herdr
+    lazygit
+    superfile
+    (runCommand "spf" {} "mkdir -p $out/bin && ln -s ${superfile}/bin/superfile $out/bin/spf")
+    lazydocker
+    sshfs
+    socat
   ];
 }
