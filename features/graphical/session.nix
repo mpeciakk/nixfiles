@@ -37,17 +37,8 @@
   };
   security.rtkit.enable = true;
 
-  environment.systemPackages = with pkgs; [
-    kitty
-    quickshell
-    xwayland-satellite
-    cliphist
-    wl-clipboard
-  ];
-
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     noto-fonts-color-emoji
   ];
-
 }

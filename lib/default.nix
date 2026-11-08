@@ -25,8 +25,8 @@ in {
       modules =
         [{nixpkgs.hostPlatform = system;}]
         ++ importDir ../hosts/${name}
-        ++ importDir ../modules/core
-        ++ lib.concatMap (trait: importDir ../modules/traits/${trait}) traits
+        ++ importDir ../system
+        ++ lib.concatMap (trait: importDir ../features/${trait}) traits
         ++ importDir ../home;
     };
 }
