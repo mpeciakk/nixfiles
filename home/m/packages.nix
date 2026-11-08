@@ -24,5 +24,6 @@
     legcord
     mpv
     ffmpeg
+    prismlauncher
   ];
 }
