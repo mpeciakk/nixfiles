@@ -27,7 +27,7 @@
     "/nix" = btrfs "@nix";
     "/persist" = btrfs "@persist" // {neededForBoot = true;};
     "/var/lib/nixos" = btrfs "@nixos-state" // {neededForBoot = true;};
-    "/home" = btrfs "@home";
+    "/home" = btrfs "@home" // {neededForBoot = true;};
     "/boot" = {
       device = "/dev/disk/by-label/BOOT";
       fsType = "vfat";

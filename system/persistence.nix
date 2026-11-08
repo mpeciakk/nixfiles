@@ -26,6 +26,10 @@
 
   boot.kernelParams = ["systemd.machine_id=firmware"];
   systemd.suppressedSystemUnits = ["systemd-machine-id-commit.service"];
+  systemd.services.systemd-journal-flush = {
+    after = ["nixos-core-persistence.service"];
+    wants = ["nixos-core-persistence.service"];
+  };
 
   boot.initrd.systemd.services.rollback-root = {
     description = "Rollback btrfs @root do @root-blank";

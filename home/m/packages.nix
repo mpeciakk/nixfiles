@@ -7,5 +7,9 @@
     wl-clipboard
     mangohud
     ripgrep
+    atuin
+    zoxide
+    carapace
+    bat
   ];
 }
