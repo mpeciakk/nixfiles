@@ -5,7 +5,6 @@
     xwayland-satellite
     cliphist
     wl-clipboard
-    mangohud
     ripgrep
     atuin
     zoxide
@@ -24,7 +23,6 @@
     legcord
     mpv
     ffmpeg
-    prismlauncher
     herdr
     lazygit
     superfile
