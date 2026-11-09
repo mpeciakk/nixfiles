@@ -23,6 +23,22 @@ in {
       // link "herdr-automatic-rename" ["config.sh"]
       // {"quickshell".source = "${dot}/quickshell";}
       // {"wireplumber".source = "${dot}/wireplumber";}
+      // {
+        "uv/uv.toml".text = ''
+          python-preference = "only-managed"
+        '';
+        "user-dirs.dirs".text = ''
+          XDG_DESKTOP_DIR="$HOME/"
+          XDG_DOCUMENTS_DIR="$HOME/documents"
+          XDG_DOWNLOAD_DIR="$HOME/downloads"
+          XDG_MUSIC_DIR="$HOME/"
+          XDG_PICTURES_DIR="$HOME/pictures"
+          XDG_PUBLICSHARE_DIR="$HOME/"
+          XDG_TEMPLATES_DIR="$HOME/"
+          XDG_VIDEOS_DIR="$HOME/"
+          XDG_PROJECTS_DIR="$HOME/projects"
+        '';
+      }
       // builtins.listToAttrs (map (n: {
         name = "git/${n}";
         value = {
