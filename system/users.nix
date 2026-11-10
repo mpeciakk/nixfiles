@@ -1,4 +1,10 @@
-{pkgs, ...}: {
+{
+  inputs,
+  pkgs,
+  ...
+}: {
+  imports = [inputs.hjem.nixosModules.default];
+
   users.mutableUsers = false;
 
   users.users = {
@@ -14,4 +20,9 @@
   };
 
   environment.shells = [pkgs.nushell];
+
+  hjem.users.m = {
+    user = "m";
+    directory = "/home/m";
+  };
 }

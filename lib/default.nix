@@ -13,6 +13,7 @@ in {
     lib.nixosSystem {
       specialArgs = {
         inherit inputs;
+        dotfiles = import ./dotfiles.nix;
         nixos-core-module = let
           src = inputs.nixpkgs.legacyPackages.${system}.applyPatches {
             name = "nixos-core-patched";
@@ -26,7 +27,6 @@ in {
         [{nixpkgs.hostPlatform = system;}]
         ++ importDir ../hosts/${name}
         ++ importDir ../system
-        ++ lib.concatMap (trait: importDir ../features/${trait}) traits
-        ++ importDir ../home;
+        ++ lib.concatMap (trait: importDir ../features/${trait}) traits;
     };
 }
