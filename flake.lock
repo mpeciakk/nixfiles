@@ -109,6 +109,27 @@
         "type": "github"
       }
     },
+    "jfsh": {
+      "inputs": {
+        "home-manager": [],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1791441317,
+        "narHash": "sha256-YX077+oHHcH2bSjn5a1eh+uuL1UACiGOi7/9TEu8srA=",
+        "owner": "hacel",
+        "repo": "jfsh",
+        "rev": "7a00d39a30d18f03192a9a616dc145b29304e448",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hacel",
+        "repo": "jfsh",
+        "type": "github"
+      }
+    },
     "nix-cachyos-kernel": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -234,6 +255,7 @@
         "biri": "biri",
         "helium": "helium",
         "hjem": "hjem",
+        "jfsh": "jfsh",
         "nix-cachyos-kernel": "nix-cachyos-kernel",
         "nixos-apple-silicon": "nixos-apple-silicon",
         "nixos-core": "nixos-core",

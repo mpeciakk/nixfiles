@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  inputs,
+  pkgs,
+  ...
+}: {
   hjem.users.m.packages = with pkgs; [
     kitty
     quickshell
@@ -30,5 +34,6 @@
     lazydocker
     sshfs
     socat
+    inputs.jfsh.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 }
