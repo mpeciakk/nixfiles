@@ -12,5 +12,6 @@
         "--ignore-gpu-blocklist"
       ];
     })
+    pkgs.pwvucontrol
   ];
 }
