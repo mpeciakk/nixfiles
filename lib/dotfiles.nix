@@ -1,4 +1,3 @@
-# symlinki hjem do ~/dotfiles (poza store: edycja bez rebuilda)
 rec {
   dot = "/home/m/dotfiles/config";
 

@@ -6,7 +6,6 @@
   imports = [inputs.nixos-apple-silicon.nixosModules.apple-silicon-support];
 
   hardware.asahi.enable = true;
-  # firmware Apple z ESP przy boocie (initrd), bez blobów w publicznym repo
   hardware.asahi.peripheralFirmwareDirectory = null;
 
   # m1n1/U-Boot nie mają zmiennych EFI; ESP Asahi ma ~500 MB
