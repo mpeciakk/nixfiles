@@ -1,0 +1,171 @@
+---
+name: finishing-a-development-branch
+description: Use when implementation is done and a branch or worktree needs wrapping up — the user asks to merge, open a PR, keep or discard the branch — or when the final suite has not been run yet.
+---
+
+# Finishing a Development Branch
+
+Verify tests → detect the workspace → present options → execute → clean up.
+
+## Step 1 — tests green, on the real suite
+
+If the branch review ran the suite green on the current HEAD (its
+Verification section names the commit), cite that run. Otherwise — fixes landed
+after the review — run the project's full suite. A branch with no code changes
+needs no suite. If anything fails, report the failures and stop: merging red
+code or opening a failing PR costs more than the delay.
+
+The living spec was brought up to date before the branch review
+(executing-plans). If a fix after the review changed something the
+spec describes, update that section now and commit it.
+
+## Step 2 — what kind of workspace is this?
+
+```bash
+git rev-parse --git-dir --git-common-dir --show-toplevel
+git branch --show-current
+```
+
+| State | Menu | Cleanup path |
+|---|---|---|
+| git-dir == git-common-dir (normal checkout) | 4 options | nothing to remove |
+| worktree under `.claude/worktrees/` (created by `EnterWorktree`) | 4 options | `ExitWorktree` |
+| worktree under `.worktrees/` or `worktrees/` (created by git) | 4 options | `git worktree remove` |
+| worktree elsewhere, or detached HEAD | 3 options (no local merge) | leave it; the host owns it |
+
+## Step 3 — base branch
+
+`git merge-base HEAD main` (or `master`). If neither resolves, ask: "This
+branch split from main — correct?"
+
+## Step 4 — present the options, without commentary
+
+If the plan's copy on the branch (`<worktree>/.flow/plans/<plan basename>`,
+read before Step 5 leaves the worktree) has a `## Rulings` section, list its
+lines first, in the reply — decisions you made during the run that the user
+has not seen yet.
+
+Then ask with the `AskUserQuestion` tool, not as a question typed in the chat.
+One single-select question in the user's language, the branch name in it,
+these options in this order:
+
+1. Commit, merge into <base-branch> and push it (if origin exists)
+2. Commit, push the branch and open a Pull Request
+3. Keep the branch as-is (I'll handle it later)
+4. Discard this work
+
+Detached HEAD drops option 1 and offers: push as a new branch and open a PR /
+keep as-is / discard. No remote (`git remote` prints nothing) drops option 2,
+and option 1 stops after the local merge.
+
+"Commit" in options 1 and 2 means anything still uncommitted on the branch
+goes into a commit first, after the suite in Step 1 ran on it.
+
+## Step 5 — execute
+
+Record the stage now:
+
+```bash
+~/.claude/hooks/flow-state set stage=finish
+```
+
+**1. Merge and push.** Merge before removing anything — a failed merge with the
+worktree already gone is unrecoverable work.
+
+Check where you actually are first: `git rev-parse --show-toplevel` against
+the recorded `worktree` (`flow-state get worktree`). Still inside a worktree
+`EnterWorktree` created (Step 2's second row) → exit it before touching the
+main checkout: `ExitWorktree` with `action: "keep"`, not `"remove"` — the
+merge has not happened yet, and removing the branch now would make it
+unrecoverable. From inside that session, git operations on the shared main
+checkout are refused until the session exits the worktree. A
+worktree the session only `cd`'d into (Step 2's third row) carries no such
+confinement — skip this if that's what you're in.
+
+```bash
+MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
+cd "$MAIN_ROOT"
+git checkout <base-branch> && git pull   # skip the pull with no remote
+git merge <feature-branch>
+<test command>                     # only if the merge was not a fast-forward
+git push origin <base-branch>      # only if a remote exists
+```
+
+Then clean up the workspace (Step 6) — the branch is still checked out in the worktree until it is gone, so
+the order is merge, then remove the workspace, then deal with the branch.
+
+**2. Push and open a PR.** `git push -u origin <feature-branch>`, then open the
+PR. Keep the worktree: the user needs it to act on review feedback.
+
+**3. Keep as-is.** Report the branch and worktree path. Change nothing.
+
+**4. Discard.** List exactly what disappears — branch, commits, worktree path —
+and require the user to type `discard`. Then clean up the workspace (Step 6).
+
+## Step 6 — clean up the workspace
+
+Only for options 1 and 4; options 2 and 3 always keep the worktree.
+
+**Created by `EnterWorktree` (under `.claude/worktrees/`):** check where you are
+first — `git rev-parse --show-toplevel` against the recorded `worktree`.
+
+- **Still inside it** (discard, option 4 — nothing needed the main checkout):
+  call `ExitWorktree` with `action: "remove"`. It deletes the worktree **and
+  its branch**, and returns the session to its original directory — no
+  separate `git branch -d` afterwards; running one errors with "branch not
+  found".
+- **Already back in the main checkout** (merge, option 1 — Step 5 required
+  exiting with `action: "keep"` first to reach it): you already left this
+  worktree once. Do not call `ExitWorktree` again expecting it to still track
+  what you exited — fall straight to the git-based path below, using the
+  worktree path you recorded before you left.
+
+Two things the direct-removal call above will do that the naive reading does
+not expect:
+
+- It **refuses** to remove a worktree holding uncommitted files or commits not
+  on the original branch, and returns the list. After a discard the user
+  confirmed by typing `discard`, that leftover is scratch: re-invoke with
+  `discard_changes: true`. Answering the refusal with `action: "keep"` instead
+  leaves the worktree alive *and* blocks the branch delete — the
+  lost-workspace failure, recreated at the last step.
+- It only knows worktrees **it created in this session**. Two more states it
+  cannot remove: a resumed run (it reports no active worktree session and
+  changes nothing), and a worktree you re-entered with `path` — the tool's own
+  contract says it will not remove that one. In every state where it does not
+  apply, the removal is yours to do: the git path below. Do not report cleanup
+  as done because the tool exited cleanly.
+
+**Created by git, or from an earlier session (under `.worktrees/`,
+`worktrees/`, `.claude/worktrees/`):** `cd` to the main root first. Removing a
+worktree from inside it succeeds and leaves the session in a deleted directory,
+after which every git call fails with "Unable to read current working
+directory" — the recovery is another `cd`, but you will be debugging it blind.
+
+```bash
+git worktree remove "$WORKTREE_PATH"
+git worktree prune
+git branch -d <feature-branch>        # -D for a confirmed discard
+```
+
+Ignored files (build output, caches) do not block removal. A
+refusal means modified or untracked files that exist nowhere else — an
+uncommitted note, work left after a BLOCKED task. Never add `--force` on your
+own: list them with `git -C "$WORKTREE_PATH" status --porcelain -uall` and
+ask whether to commit them to the branch, move them into the main checkout,
+or delete them. After a discard the user confirmed by typing `discard`,
+`--force` is fine — that confirmation already covered them.
+
+**Anywhere else:** the host environment owns it. Leave it alone.
+
+Finally, end the run: `~/.claude/hooks/flow-state clear` — and tell the user the
+next step is `/clear` before the next change.
+
+## Never
+
+- Offer options before the suite is green, or land a non-fast-forward merge
+  without running the suite on the merged result.
+- Remove a worktree before the merge succeeded, or remove one you did not
+  create.
+- Delete the branch before removing the worktree that has it checked out.
+- Discard without typed confirmation, or force-push unless asked.

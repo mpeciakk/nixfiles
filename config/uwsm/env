@@ -1,0 +1,26 @@
+# Host-agnostic session environment, sourced by uwsm. GPU variables live per host in
+# Nix (hosts/<host>/hardware.nix, environment.sessionVariables).
+export XDG_SESSION_TYPE=wayland
+export QT_QPA_PLATFORM=wayland
+export SDL_VIDEODRIVER=wayland
+export ELECTRON_OZONE_PLATFORM_HINT=wayland
+export OZONE_PLATFORM=wayland
+export _JAVA_AWT_WM_NONREPARENTING=1
+
+export GRADLE_USER_HOME="$XDG_DATA_HOME"/toolchains/gradle
+export ANSIBLE_HOME="$XDG_DATA_HOME"/toolchains/ansible
+export WINEPREFIX="$XDG_DATA_HOME"/wine
+export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
+export MUTAGEN_DATA_DIRECTORY="$XDG_DATA_HOME"/mutagen
+export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME"/npm/npmrc
+export WAKATIME_HOME="$XDG_CONFIG_HOME"/wakatime
+# Non-default GNUPGHOME moves gpg-agent's socket dir to a hashed /run/user/$UID/gnupg/d.*,
+# which the distro's gpg-agent*.socket units (hardcoded %t/gnupg/S.*) no longer match. Inert
+# here: no secret keys, git signs with ssh — but a future gpg key needs those units fixed.
+export GNUPGHOME="$XDG_DATA_HOME"/gnupg
+
+# herdr-lazy reads its plugin list from here instead of herdr's plugin config dir, so the
+# declared plugin set and its lockfile live in this repo. Must be set session-wide: the
+# herdr *server* spawns the plugin and the manage pane, so a shell-only export would make
+# the CLI and the pane read different files.
+export HERDR_LAZY_LIST="$HOME/projects/nixfiles/config/herdr/plugins.list"

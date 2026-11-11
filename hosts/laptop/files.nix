@@ -1,8 +1,16 @@
 {
-  hjem.users.m.xdg.config.files = {
-    "niri/output.kdl".source = "/home/m/dotfiles/hosts/mac/niri-output.kdl";
-    "uwsm/env.d/gpu".source = "/home/m/dotfiles/hosts/mac/uwsm-gpu-env";
-    "dotfiles/wallpaper-dark.png".source = "/home/m/dotfiles/hosts/mac/wallpaper-dark.png";
-    "dotfiles/wallpaper-light.png".source = "/home/m/dotfiles/hosts/mac/wallpaper-light.png";
-  };
+  hjem.users.m.xdg.config.files."niri/output.kdl".text = ''
+    output "DP-1" {
+        mode "2560x1440@74.924"
+        scale 1
+        position x=0 y=0
+        focus-at-startup
+    }
+
+    output "eDP-1" {
+        mode "2560x1600@60"
+        scale 1.5
+        position x=0 y=1440
+    }
+  '';
 }

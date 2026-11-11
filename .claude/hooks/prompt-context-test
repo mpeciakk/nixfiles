@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+# Regression net for the prompt-context hook. Runs the real script against
+# synthetic payloads; the hostname comes from PROMPT_CONTEXT_HOSTNAME, so the
+# suite does not depend on the machine it runs on.
+#
+# Usage: prompt-context-test        (exit 0 = all green)
+set -u
+
+HERE=$(cd "$(dirname "$0")" && pwd)
+HOOK=$HERE/prompt-context
+SETTINGS=$(cd "$HERE/.." && pwd)/settings.json
+pass=0; fail=0
+
+command -v python3 >/dev/null || { echo "MISSING DEPENDENCY: python3" >&2; exit 1; }
+[ -x "$HOOK" ] || { echo "FIXTURE FAILED: $HOOK is not executable" >&2; exit 1; }
+
+report() { if [ "$1" = ok ]; then printf 'PASS  %-58s %s\n' "$2" "${3:-}"; pass=$((pass+1))
+  else printf 'FAIL  %-58s %s\n' "$2" "${3:-}"; fail=$((fail+1)); fi; }
+
+context_of() { # hostname event
+  printf '{"hook_event_name":"%s","prompt":"x"}' "$2" | PROMPT_CONTEXT_HOSTNAME="$1" "$HOOK" | python3 -c '
+import json, sys
+try: print(json.load(sys.stdin)["hookSpecificOutput"]["additionalContext"])
+except Exception: print("")'
+}
+
+event_of() { # event
+  printf '{"hook_event_name":"%s","prompt":"x"}' "$1" | PROMPT_CONTEXT_HOSTNAME=pc "$HOOK" | python3 -c '
+import json, sys
+try: print(json.load(sys.stdin)["hookSpecificOutput"]["hookEventName"])
+except Exception: print("")'
+}
+
+echo "=== the host label is the hostname, for the two known machines ==="
+c=$(context_of pc UserPromptSubmit)
+case "$c" in "[CTX] pc · "*) report ok "hostname pc is reported as pc";; *) report no "pc not reported as pc" "$c";; esac
+c=$(context_of laptop UserPromptSubmit)
+case "$c" in "[CTX] laptop · "*) report ok "hostname laptop is reported as laptop";; *) report no "laptop not reported as laptop" "$c";; esac
+
+echo "=== any other hostname is unknown, with the reason ==="
+c=$(context_of ciek UserPromptSubmit)
+case "$c" in "[CTX] unknown (hostname 'ciek'"*) report ok "an unknown hostname is not guessed";; *) report no "unknown hostname mishandled" "$c";; esac
+
+echo "=== without the override the real hostname is used ==="
+real=$(python3 -c 'import socket; print(socket.gethostname())')
+c=$(printf '{"hook_event_name":"UserPromptSubmit","prompt":"x"}' | env -u PROMPT_CONTEXT_HOSTNAME "$HOOK" | python3 -c '
+import json, sys; print(json.load(sys.stdin)["hookSpecificOutput"]["additionalContext"])')
+case "$c" in "[CTX] $real · "*|"[CTX] unknown (hostname '$real'"*) report ok "the real hostname ($real) drives the label";; *) report no "real hostname not used" "$c";; esac
+
+echo "=== the envelope names the event it was called for ==="
+e=$(event_of UserPromptSubmit)
+[ "$e" = UserPromptSubmit ] && report ok "UserPromptSubmit is echoed back" || report no "wrong hookEventName" "$e"
+e=$(event_of SubagentStart)
+[ "$e" = SubagentStart ] && report ok "SubagentStart is echoed back" || report no "wrong hookEventName" "$e"
+
+echo "=== the context line is identical for a prompt and a subagent ==="
+c=$(context_of pc SubagentStart)
+if [[ "$c" =~ ^\[CTX\]\ pc\ ·\ [A-Za-z]+\ [0-9]{4}-[0-9]{2}-[0-9]{2}\ [0-9]{2}:[0-9]{2}:[0-9]{2}$ ]]; then
+  report ok "SubagentStart carries the same line as UserPromptSubmit, no suffix"
+else
+  report no "SubagentStart line differs from the UserPromptSubmit shape" "$c"
+fi
+
+echo "=== bad input is survivable ==="
+out=$(printf 'not json' | "$HOOK"; echo "rc=$?")
+case "$out" in "rc=0") report ok "malformed stdin exits 0 and emits nothing";; *) report no "malformed stdin mishandled" "$out";; esac
+out=$(printf '' | "$HOOK"; echo "rc=$?")
+case "$out" in "rc=0") report ok "empty stdin exits 0 and emits nothing";; *) report no "empty stdin mishandled" "$out";; esac
+
+echo "=== the hook is wired into settings.json ==="
+wired() { # event matcher_substring command_substring
+  python3 -c '
+import json, sys
+cfg = json.load(open(sys.argv[1]))
+event, matcher, command = sys.argv[2], sys.argv[3], sys.argv[4]
+for entry in cfg.get("hooks", {}).get(event, []):
+    if matcher and matcher not in (entry.get("matcher") or ""): continue
+    for hook in entry.get("hooks", []):
+        if command in (hook.get("command") or ""): sys.exit(0)
+sys.exit(1)' "$SETTINGS" "$1" "$2" "$3"
+}
+
+wired UserPromptSubmit "" prompt-context \
+  && report ok "UserPromptSubmit runs prompt-context" \
+  || report no "UserPromptSubmit does not run prompt-context"
+wired SubagentStart "" prompt-context \
+  && report ok "SubagentStart runs prompt-context" \
+  || report no "SubagentStart does not run prompt-context"
+wired SubagentStart "" flow-context \
+  && report ok "SubagentStart still runs flow-context" \
+  || report no "flow-context was dropped from SubagentStart"
+wired SubagentStart "" cbm-subagent-reminder \
+  && report no "cbm-subagent-reminder is still wired (removed by D13)" \
+  || report ok "cbm-subagent-reminder is no longer wired"
+grep -q timestamp-injector "$SETTINGS" \
+  && report no "settings.json still references the old hook name" \
+  || report ok "no reference to the old hook name remains"
+
+printf '\n%d passed, %d failed\n' "$pass" "$fail"
+[ "$fail" -eq 0 ]

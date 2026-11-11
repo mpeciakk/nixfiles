@@ -1,0 +1,37 @@
+layout {
+    gaps 8
+
+    center-focused-column "never"
+
+    background-color "transparent"
+
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+
+    default-column-width { proportion 0.5; }
+
+    focus-ring {
+        off
+    }
+
+    border {
+        off
+    }
+}
+
+gestures {
+    hot-corners {
+        off
+    }
+}
+
+overview {
+    consolidated-carousel {
+        reveal-zoom 0.48
+        assembled-zoom 0.22
+    }
+}
+

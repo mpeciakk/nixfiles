@@ -1,0 +1,46 @@
+include "input.kdl"
+include "output.kdl"
+include "layout.kdl"
+include "workspace.kdl"
+include "window_rules.kdl"
+include "bindings.kdl"
+include "animations.kdl"
+
+spawn-at-startup "wl-paste" "--watch" "cliphist" "store"
+
+prefer-no-csd
+
+blur {
+    passes 3
+    offset 5
+    // Only where blur is on (the island's region). Not in the wyspa layer-rule: there it would
+    // saturate the whole full-screen surface whenever the shell sets no region (line mode).
+    saturation 2.0
+}
+
+screenshot-path "~/pictures/screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+recent-windows {
+    debounce-ms 750
+
+    open-delay-ms 0
+
+    highlight {
+        active-color "#999999ff"
+        urgent-color "#ff9999ff"
+        padding 8
+        corner-radius 8
+    }
+
+    previews {
+        max-height 200
+        max-scale 0.5
+    }
+
+    binds {
+        Mod+Tab         { next-window; }
+        Mod+Shift+Tab   { previous-window; }
+        Mod+grave       { next-window     filter="app-id"; }
+        Mod+Shift+grave { previous-window filter="app-id"; }
+    }
+}

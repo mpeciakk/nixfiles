@@ -1,8 +1,23 @@
 {
-  hjem.users.m.xdg.config.files = {
-    "niri/output.kdl".source = "/home/m/dotfiles/hosts/pc/niri-output.kdl";
-    "uwsm/env.d/gpu".source = "/home/m/dotfiles/hosts/pc/uwsm-gpu-env";
-    "dotfiles/wallpaper-dark.png".source = "/home/m/dotfiles/hosts/pc/wallpaper-dark.png";
-    "dotfiles/wallpaper-light.png".source = "/home/m/dotfiles/hosts/pc/wallpaper-light.png";
-  };
+  hjem.users.m.xdg.config.files."niri/output.kdl".text = ''
+    output "DP-2" {
+        mode "3840x2160@143.851"
+        scale 1.5
+        position x=0 y=0
+        variable-refresh-rate on-demand=true
+        focus-at-startup
+    }
+
+    output "HDMI-A-1" {
+        mode "1920x1080@144"
+        scale 1.0
+        position x=2560 y=0
+        transform "90"
+
+        layout {
+            main-axis "vertical"
+            default-column-width { proportion 0.5; }
+        }
+    }
+  '';
 }

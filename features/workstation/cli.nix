@@ -23,13 +23,11 @@
       dotfiles.link "dotfiles" ["config.json"]
       // dotfiles.link "herdr" ["config.toml" "plugins/config/herdr-navigator/config.toml"]
       // dotfiles.link "herdr-automatic-rename" ["config.sh"]
-      // builtins.listToAttrs (map (n: {
-        name = "git/${n}";
-        value = {
-          source = "${dotfiles.dot}/git/${n}";
-          clobber = true;
-        };
-      }) ["config" "ignore"]);
+      // dotfiles.linkTree "nvim"
+      // builtins.mapAttrs (_: f: f // {clobber = true;}) (
+        dotfiles.link "git" ["config" "ignore"]
+        // dotfiles.link "superfile" ["config.toml"]
+      );
 
     files = dotfiles.bin ["herdr-here" "herdr-ssh" "claude-baseline"];
   };

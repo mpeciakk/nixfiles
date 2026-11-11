@@ -1,4 +1,4 @@
-# login shell (users.nix) i to, czego wymaga jego config: init.nu ładuje atuin, zoxide i carapace
+# login shell (users.nix) i to, czego wymaga jego config: init.nu ładuje atuin, zoxide i carapace (skrypty init generuje Nix)
 {
   pkgs,
   dotfiles,
@@ -18,6 +18,7 @@ in {
 
     xdg.config.files =
       dotfiles.link "nushell" ["config.nu" "env.nu" "init.nu" "completions.nu" "aliases.nu"]
+      // dotfiles.link "atuin" ["config.toml"]
       // {
         "user-dirs.dirs".text = ''
           XDG_DESKTOP_DIR="$HOME/"
@@ -35,6 +36,8 @@ in {
     xdg.data.files = {
       "zoxide/init.nu" = shellInit "zoxide" "${pkgs.zoxide}/bin/zoxide init nushell";
       "atuin/init.nu" = shellInit "atuin" "${pkgs.atuin}/bin/atuin init nu";
+      # carapace wpisuje do skryptu swój katalog shimów z XDG_CONFIG_HOME, więc ścieżka musi być docelowa
+      "carapace/init.nu" = shellInit "carapace" "XDG_CONFIG_HOME=/home/m/.config ${pkgs.carapace}/bin/carapace _carapace nushell";
     };
   };
 }

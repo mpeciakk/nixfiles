@@ -50,7 +50,14 @@
     modesetting.enable = true;
     package = config.boot.kernelPackages.nvidiaPackages.latest;
   };
-  environment.sessionVariables.__GL_SHADER_DISK_CACHE_SIZE = "12000000000";
+  environment.sessionVariables = {
+    __GL_SHADER_DISK_CACHE_SIZE = "12000000000";
+    LIBVA_DRIVER_NAME = "nvidia";
+    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+    GBM_BACKEND = "nvidia-drm";
+    NVD_BACKEND = "direct";
+    VDPAU_DRIVER = "nvidia";
+  };
   boot.extraModprobeConfig = ''
     options nvidia NVreg_InitializeSystemMemoryAllocations=0 NVreg_DynamicPowerManagement=0x02
   '';

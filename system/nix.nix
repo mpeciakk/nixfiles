@@ -23,6 +23,6 @@
 
   programs.nh = {
     enable = true;
-    flake = "/home/m/projects/nixos";
+    flake = "/home/m/projects/nixfiles";
   };
 }
