@@ -4,7 +4,7 @@
   importDir = dir:
     if builtins.pathExists dir
     then lib.filter (lib.hasSuffix ".nix") (lib.filesystem.listFilesRecursive dir)
-    else [];
+    else throw "nixfiles: brak katalogu ${toString dir}";
 in {
   mkHost = name: {
     system,
@@ -14,14 +14,7 @@ in {
       specialArgs = {
         inherit inputs;
         dotfiles = import ./dotfiles.nix;
-        nixos-core-module = let
-          src = inputs.nixpkgs.legacyPackages.${system}.applyPatches {
-            name = "nixos-core-patched";
-            src = inputs.nixos-core;
-            patches = [../patches/nixos-core-fixes.patch];
-          };
-        in
-          import "${src}/nix/modules/nixos.nix" inputs.nixos-core;
+        nixos-core-module = import "${inputs.nixos-core}/nix/modules/nixos.nix" inputs.nixos-core;
       };
       modules =
         [{nixpkgs.hostPlatform = system;}]

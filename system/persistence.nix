@@ -8,6 +8,10 @@
   system.nixos-core = {
     enable = true;
     components = {
+      # defaulty tych trzech czytają usunięte boot.initrd.systemd.enable; jawna wartość ich nie liczy
+      extraUtilsCommand.enable = false;
+      bootStage1.enable = false;
+      initialRamdisk.enable = false;
       bootStage2.enable = false;
       etcActivation.enable = false;
       userGroupsActivation.enable = false;
