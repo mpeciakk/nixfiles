@@ -2,7 +2,7 @@ binds {
     Mod+WheelScrollRight cooldown-ms=200 { focus-column-right; }
     Mod+WheelScrollLeft cooldown-ms=200 { focus-column-left; }
 
-    Mod+Return repeat=false { spawn-sh "kitten @ --to unix:@kitty launch --type=os-window 2>/dev/null || kitty --single-instance"; }
+    Mod+Return repeat=false { spawn "kitty" "--single-instance"; }
     Mod+Q repeat=false  { close-window; }
 
     Mod+Space repeat=false { spawn "qs" "ipc" "call" "island" "toggle" "launcher"; }

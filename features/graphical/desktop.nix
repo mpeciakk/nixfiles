@@ -15,6 +15,7 @@
       legcord
       mpv
       ffmpeg
+      playerctl
       inputs.jfsh.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 
