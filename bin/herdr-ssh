@@ -42,10 +42,20 @@ def docker-tunnel [host: string, body: closure] {
 # Hasło idzie przez stdin ssh do pliku 0600 na hoście, nigdy w linii komend.
 # Katalog to pierwszy, w którym askpass da się uruchomić: tmpfs bywa `noexec`
 # (na vega `/dev/shm`), a sudo wtedy nie odpali askpassa.
-# Zwraca katalog z plikiem i askpassem oraz ścieżkę sftp-server.
+# Zegar na hoście kasuje katalog po 120 s, nawet gdy popup zginie przed sprzątaniem.
+# sftp-server i sudo szukane przed zapisem hasła; ścieżki NixOS są inne niż FHS.
+# Zwraca katalog z plikiem i askpassem oraz ścieżki sftp-server i sudo.
 def stash-sudo-password [host: string, pw: string] {
     let script = [
         'umask 077'
+        'sftp='
+        r#'for p in "$(awk '$1 == "Subsystem" && $2 == "sftp" {print $3; exit}' /etc/ssh/sshd_config 2>/dev/null)" /usr/lib/openssh/sftp-server /usr/libexec/openssh/sftp-server /usr/lib/ssh/sftp-server; do'#
+        '  [ -x "$p" ] && sftp=$p && break'
+        'done'
+        'sudo=$(command -v sudo)'
+        'echo "sftp=$sftp"'
+        'echo "sudo=$sudo"'
+        '[ -n "$sftp" ] && [ -n "$sudo" ] || exit 1'
         'd='
         'for base in /dev/shm "${XDG_RUNTIME_DIR:-}" /tmp "$HOME"; do'
         '  [ -n "$base" ] && [ -d "$base" ] && [ -w "$base" ] || continue'
@@ -55,24 +65,24 @@ def stash-sudo-password [host: string, pw: string] {
         '  rm -rf "$d"; d='
         'done'
         '[ -n "$d" ] || exit 1'
+        r#'nohup sh -c 'sleep 120; rm -rf "$1"' herdr-expire "$d" </dev/null >/dev/null 2>&1 &'#
         `cat > "$d/pw" <<'HERDR_PW_EOF'`
         $pw
         'HERDR_PW_EOF'
         r##'printf '#!/bin/sh\ncat "%s/pw"\n' "$d" > "$d/ask"'##
         'chmod 700 "$d/ask"'
-        'echo "$d"'
-        'for p in /usr/lib/openssh/sftp-server /usr/libexec/openssh/sftp-server /usr/lib/ssh/sftp-server; do [ -x "$p" ] && echo "$p" && break; done'
+        'echo "dir=$d"'
     ] | str join "\n"
     # Przez `sh` na stdin, bo login shell hosta nie musi być POSIX (na `laptop` to nu).
-    let out = $script | ssh $host sh | complete | get stdout | lines
-    match ($out | length) {
-        0 => { fail $"($host): brak katalogu, w którym da się uruchomić askpass" }
-        1 => {
-            $"rm -rf '($out.0)'" | ssh $host sh
-            fail $"($host): nie znalazłem sftp-server"
-        }
-    }
-    { dir: $out.0, sftp: $out.1 }
+    let r = $script | ssh $host sh | complete
+    # Linie key=value, bo .bashrc hosta potrafi coś wypisać przed skryptem.
+    let out = $r.stdout | lines | parse '{key}={value}'
+        | reduce -f {} {|it, acc| $acc | upsert $it.key $it.value }
+    if ($out.sftp? == null) { fail $"ssh ($host): ($r.stderr | str trim)" }
+    if ($out.sftp | is-empty) { fail $"($host): nie znalazłem sftp-server" }
+    if ($out.sudo | is-empty) { fail $"($host): nie znalazłem sudo" }
+    if ($out.dir? | is-empty) { fail $"($host): brak katalogu, w którym da się uruchomić askpass" }
+    $out
 }
 
 def browse [host: string, --root] {
@@ -93,7 +103,7 @@ def browse [host: string, --root] {
         stash-sudo-password $host $pw
     } else { null }
     let opts = if $root {
-        $"($base),sftp_server=SUDO_ASKPASS=($stash.dir)/ask /usr/bin/sudo -A ($stash.sftp)"
+        $"($base),sftp_server=SUDO_ASKPASS=($stash.dir)/ask ($stash.sudo) -A ($stash.sftp)"
     } else { $base }
 
     let r = do { sshfs $src $mnt -o $opts } | complete
