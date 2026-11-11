@@ -6,8 +6,7 @@ result-*
 # herdr-lazy trzyma obok locka trzy poprzednie wersje (rollback), to stan lokalny
 config/herdr/plugins.lock.[123]
 
-# Claude Code: synchronizowane skille i worktree to stan runtime; .flow/ (plany, specy,
+# Claude Code w sesjach na tym repo: worktree to stan runtime; .flow/ (plany, specy,
 # review) może nieść kontekst firmowy, a to repo jest publiczne
-.claude/skills/synced/
-.claude/worktrees/
+.claude
 .flow/

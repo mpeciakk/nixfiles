@@ -26,14 +26,14 @@
       builtins.listToAttrs (map (n: {
         name = ".claude/${n}";
         value = {
-          source = dotfiles.source ".claude/${n}";
+          source = dotfiles.source "config/claude/${n}";
           clobber = true;
         };
       }) ["settings.json" "CLAUDE.md" "agents" "hooks"])
       // builtins.listToAttrs (map (n: {
         name = ".claude/skills/${n}";
-        value.source = dotfiles.source ".claude/skills/${n}";
-      }) (dotfiles.subdirs ".claude/skills"))
+        value.source = dotfiles.source "config/claude/skills/${n}";
+      }) (dotfiles.subdirs "config/claude/skills"))
       # skill z danymi firmowymi: poza publicznym repo, w ~/work (mutagen)
       // {".claude/skills/knowledge-transfer".source = "/home/m/work/claude/knowledge-transfer";};
   };
