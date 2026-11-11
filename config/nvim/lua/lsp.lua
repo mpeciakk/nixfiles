@@ -13,7 +13,6 @@ vim.lsp.enable({
   -- "kotlin_lsp",
   -- "kotlin_language_server",
   "tsgo",
-  "hyprls",
   "biome",
   "css_ls",
   "qmlls",

@@ -1,5 +1,6 @@
 use std/util "path add"
 
+path add ~/.local/share/toolchains/npm/bin/
 path add ~/.local/bin/
 path add ~/.cache/.bun/bin/
 
