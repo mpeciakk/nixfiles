@@ -41,4 +41,19 @@
   users.users.m.extraGroups = ["networkmanager"];
 
   hardware.bluetooth.enable = true;
+
+  system.nixos-core.persistence.stores."/persist".directories = [
+    {
+      target = "/etc/NetworkManager/system-connections";
+      mode = "0700";
+    }
+    {
+      target = "/var/lib/iwd";
+      mode = "0700";
+    }
+    {
+      target = "/var/lib/bluetooth";
+      mode = "0700";
+    }
+  ];
 }
