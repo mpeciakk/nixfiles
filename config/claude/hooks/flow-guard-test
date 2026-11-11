@@ -26,10 +26,11 @@ GUARD=$HERE/flow-guard
 STATE=$HERE/flow-state
 CONTEXT=$HERE/flow-context
 SETTINGS=$(cd "$HERE/.." && pwd)/settings.json
-ROOT=${TMPDIR:-/tmp}/flow-hooks-test
+# Own directory per run: a fixed path let two concurrent runs delete each other's fixtures.
+ROOT=$(mktemp -d "${TMPDIR:-/tmp}/flow-hooks-test.XXXXXX") || { echo "cannot create fixture dir" >&2; exit 1; }
 export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null
 pass=0; fail=0
-trap 'chmod -R u+w "$ROOT" 2>/dev/null' EXIT
+trap 'chmod -R u+w "$ROOT" 2>/dev/null; rm -rf "$ROOT"' EXIT
 
 for dep in python3 git; do
   command -v "$dep" >/dev/null || { echo "MISSING DEPENDENCY: $dep" >&2; exit 1; }
@@ -151,7 +152,6 @@ mkrepo() { mkdir -p "$1" && git -C "$1" init -q -b main \
     && git -C "$1" commit -q --no-gpg-sign -m init; }
 
 # ------------------------------------------------------------------ fixtures
-rm -rf "$ROOT"; mkdir -p "$ROOT"
 REPO=$ROOT/repo; WT=$REPO/.claude/worktrees/feat; EXT=$ROOT/external-wt
 mkrepo "$REPO" || fixture_fail "could not build $REPO (commit failed?)"
 git -C "$REPO" worktree add -q "$WT" -b feat/x || fixture_fail "worktree add"
@@ -288,6 +288,11 @@ case "$out" in *"already open"*) report ok "init refuses over a run with only a 
 [ "$("$STATE" --cwd "$ORD" get tasks | python3 -c 'import json,sys; print(",".join(t["n"] for t in json.load(sys.stdin)))')" = "2,10,branch-review" ] \
   && report ok "ledger orders numbers first, named gates after" \
   || report no "ledger order" "$("$STATE" --cwd "$ORD" get tasks)"
+"$STATE" --cwd "$ORD" clear >/dev/null; "$STATE" --cwd "$ORD" init par >/dev/null
+for n in 1 2 3 4 5 6 7 8; do "$STATE" --cwd "$ORD" task "$n" started >/dev/null 2>&1 & done; wait
+[ "$("$STATE" --cwd "$ORD" get tasks | python3 -c 'import json,sys; print(len(json.load(sys.stdin)))')" = 8 ] \
+  && report ok "eight concurrent task updates all land" \
+  || report no "concurrent task updates lost" "$("$STATE" --cwd "$ORD" get tasks)"
 
 echo "=== cost and process hygiene ==="
 SHIM=$ROOT/shim; mkdir -p "$SHIM"

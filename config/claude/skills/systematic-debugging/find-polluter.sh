@@ -2,13 +2,15 @@
 # Bisection script to find which test creates unwanted files/state
 # Usage: ./find-polluter.sh <file_or_dir_to_check> <test_pattern>
 # Example: ./find-polluter.sh '.git' 'src/**/*.test.ts'
+# Exit: 0 every test ran green and none created it, 1 polluter found,
+#       2 inconclusive (bad usage, no tests matched, target already there, a test run failed)
 
 set -e
 
 if [ $# -ne 2 ]; then
   echo "Usage: $0 <file_to_check> <test_pattern>"
   echo "Example: $0 '.git' 'src/**/*.test.ts'"
-  exit 1
+  exit 2
 fi
 
 POLLUTION_CHECK="$1"
@@ -24,31 +26,31 @@ TEST_PATTERN="${TEST_PATTERN#./}"
 # find -path can't match '**/' against zero directory levels, so a pattern
 # like src/**/*.test.ts would skip src/top.test.ts; also try the pattern
 # with '**/' collapsed to cover files directly under the base directory.
-TEST_FILES=$(find . \( -path "./$TEST_PATTERN" -o -path "./${TEST_PATTERN//\*\*\//}" \) | sort -u)
+TEST_FILES=$(find . -type f \( -path "./$TEST_PATTERN" -o -path "./${TEST_PATTERN//\*\*\//}" \) | sort -u)
 if [ -z "$TEST_FILES" ]; then
-  TOTAL=0
-else
-  TOTAL=$(printf '%s\n' "$TEST_FILES" | wc -l | tr -d ' ')
+  echo "❌ No test files match $TEST_PATTERN - nothing was tested"
+  exit 2
 fi
+TOTAL=$(printf '%s\n' "$TEST_FILES" | wc -l | tr -d ' ')
 
 echo "Found $TOTAL test files"
 echo ""
 
-COUNT=0
-for TEST_FILE in $TEST_FILES; do
-  COUNT=$((COUNT + 1))
+# Every run would be skipped, and a search that tested nothing must not report clean
+if [ -e "$POLLUTION_CHECK" ]; then
+  echo "❌ $POLLUTION_CHECK already exists - remove it and run again"
+  exit 2
+fi
 
-  # Skip if pollution already exists
-  if [ -e "$POLLUTION_CHECK" ]; then
-    echo "⚠️  Pollution already exists before test $COUNT/$TOTAL"
-    echo "   Skipping: $TEST_FILE"
-    continue
-  fi
+COUNT=0
+FAILED=()
+while IFS= read -r TEST_FILE; do
+  COUNT=$((COUNT + 1))
 
   echo "[$COUNT/$TOTAL] Testing: $TEST_FILE"
 
   # Run the test
-  npm test "$TEST_FILE" > /dev/null 2>&1 || true
+  npm test "$TEST_FILE" < /dev/null > /dev/null 2>&1 || FAILED+=("$TEST_FILE")
 
   # Check if pollution appeared
   if [ -e "$POLLUTION_CHECK" ]; then
@@ -65,7 +67,14 @@ for TEST_FILE in $TEST_FILES; do
     echo "  cat $TEST_FILE         # Review test code"
     exit 1
   fi
-done
+done <<< "$TEST_FILES"
+
+if [ ${#FAILED[@]} -gt 0 ]; then
+  echo ""
+  echo "⚠️  No polluter found, but ${#FAILED[@]} of $TOTAL test runs failed - a test that did not run proves nothing:"
+  printf '   %s\n' "${FAILED[@]}"
+  exit 2
+fi
 
 echo ""
 echo "✅ No polluter found - all tests clean!"
