@@ -56,10 +56,11 @@
         touch "/btrfs/@root-old/$stamp" || true
       fi
 
+      # snapshot przed sprzątaniem: nieudane kasowanie archiwum nie może zostawić systemu bez @root
+      btrfs subvolume snapshot /btrfs/@root-blank /btrfs/@root
+
       find /btrfs/@root-old -mindepth 1 -maxdepth 1 -mtime +14 \
         -exec btrfs subvolume delete --recursive {} +
-
-      btrfs subvolume snapshot /btrfs/@root-blank /btrfs/@root
       umount /btrfs
     '';
   };
