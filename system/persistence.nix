@@ -52,6 +52,8 @@
         mkdir -p /btrfs/@root-old
         stamp=$(date --date="@$(stat -c %Y /btrfs/@root)" +%Y-%m-%d_%H%M%S)
         mv /btrfs/@root "/btrfs/@root-old/$stamp"
+        # mv zostawia mtime z bootu tego roota, a po nim liczy się 14 dni: bez touch po długim uptime archiwum znikałoby od razu
+        touch "/btrfs/@root-old/$stamp" || true
       fi
 
       find /btrfs/@root-old -mindepth 1 -maxdepth 1 -mtime +14 \
