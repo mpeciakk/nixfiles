@@ -66,8 +66,12 @@ local function open_review(rev, base)
     table.insert(args, 1, rev)
   end
   opening = base
-  require("diffview").open(args)
+  -- reset even when opening fails (E11 from the q: window), or the next diffview takes this base
+  local ok, err = pcall(require("diffview").open, args)
   opening = nil
+  if not ok then
+    error(err, 0)
+  end
 end
 
 local function git(args)

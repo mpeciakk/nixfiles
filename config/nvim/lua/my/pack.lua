@@ -15,10 +15,21 @@ local specs = {
 }
 
 -- vim.pack's lock repair writes any plugin dir still on disk back into the lockfile, which both
--- machines share. Drop dirs no longer in the list before the first vim.pack call reads them.
+-- machines share. Before the first vim.pack call reads them, drop dirs that neither the list nor the
+-- lockfile names; a dir the lockfile still names would be cloned back on every start.
+-- Removing a plugin: drop its line, restart, then vim.pack.del({ name }) so the lockfile forgets it.
 local wanted = {}
 for _, src in ipairs(specs) do
   wanted[src:match("[^/]+$")] = true
+end
+local ok, locked = pcall(function()
+  local lockfile = vim.fs.joinpath(vim.fn.stdpath("config"), "nvim-pack-lock.json")
+  return vim.json.decode(table.concat(vim.fn.readfile(lockfile), "\n")).plugins
+end)
+if ok and type(locked) == "table" then
+  for name in pairs(locked) do
+    wanted[name] = true
+  end
 end
 local opt_dir = vim.fs.joinpath(vim.fn.stdpath("data"), "site", "pack", "core", "opt")
 for name, kind in vim.fs.dir(opt_dir) do
