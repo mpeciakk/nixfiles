@@ -39,6 +39,8 @@
       options = ["nofail" "x-systemd.automount" "noatime" "compress=zstd:3"];
     };
   };
+  # dopisane do /nix z system/memory.nix: osobny btrfs, bitrot w backupie wyszedłby dopiero przy odtwarzaniu
+  services.btrfs.autoScrub.fileSystems = ["/mnt/backup"];
 
   services.xserver.videoDrivers = ["nvidia"];
   hardware.graphics = {

@@ -3,18 +3,20 @@
 # diff with extended context, written to a file the reviewer reads in one
 # call. Using the recorded BASE (not HEAD~1) keeps multi-commit work intact.
 #
-# Usage: review-package BASE HEAD [OUTFILE]
-#        review-package BASE --worktree [OUTFILE]
+# Usage: review-package BASE HEAD
+#        review-package BASE --worktree
 # --worktree covers BASE to the working tree, uncommitted and untracked files
 # included — inline work that is not (all) committed yet.
-# Default OUTFILE: <main-checkout>/.flow/run/review-<base7>..<head7>.diff
+# Output: <main-checkout>/.flow/run/review-<base7>..<head7>.diff
 # (named per range, so a re-review after fixes gets a distinct fresh file).
 # Beside the run state in the main checkout, where run/ is ignored: a file
-# written into a linked worktree would leave that tree dirty.
+# written into a linked worktree would leave that tree dirty. No output-path
+# argument: the script is allow-listed without a prompt, so one would let it
+# overwrite any file.
 set -euo pipefail
 
-if [ $# -lt 2 ] || [ $# -gt 3 ]; then
-  echo "usage: review-package BASE HEAD|--worktree [OUTFILE]" >&2
+if [ $# -ne 2 ]; then
+  echo "usage: review-package BASE HEAD|--worktree" >&2
   exit 2
 fi
 
@@ -41,17 +43,10 @@ else
   label=$(git rev-parse --short "$head")
 fi
 
-if [ $# -eq 3 ]; then
-  out=$3
-  case "$out" in /*) ;; *) out="$PWD/$out" ;; esac
-  caller_chose_path=1
-else
-  caller_chose_path=0
-  dir=$(dirname "$("$(cd "$(dirname "$0")/../../../hooks" && pwd)/flow-state" path)")
-  mkdir -p "$dir"
-  [ -e "$dir/.gitignore" ] || printf '*\n' > "$dir/.gitignore"
-  out="$dir/review-$(git rev-parse --short "$base")..$label.diff"
-fi
+dir=$(dirname "$("$(cd "$(dirname "$0")/../../../hooks" && pwd)/flow-state" path)")
+mkdir -p "$dir"
+[ -e "$dir/.gitignore" ] || printf '*\n' > "$dir/.gitignore"
+out="$dir/review-$(git rev-parse --short "$base")..$label.diff"
 
 # From the root: run in a subdirectory, ls-files would list only its files.
 cd "$(git rev-parse --show-toplevel)"
@@ -103,9 +98,7 @@ else
   [ "$commits" -eq 0 ] && empty=1
 fi
 if [ "$empty" -eq 1 ]; then
-  # Only clean up a path this script chose; a caller-supplied OUTFILE may be
-  # something they already had.
-  [ "$caller_chose_path" -eq 0 ] && rm -f "$out"
+  rm -f "$out"
   echo "nothing to review in ${base}..${label}. The commits are not in this
 working tree ($(git rev-parse --show-toplevel)), the work is uncommitted (pass
 --worktree), or BASE is wrong. Find it first: \`git log --all --oneline -5\`." >&2

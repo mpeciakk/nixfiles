@@ -677,10 +677,10 @@ pkg=$(cd "$RP/sub" && "$SCR/review-package" "$RB" --worktree 2>/dev/null)
 grep -q '^+polish' "$pkg" && report ok "--worktree package has a non-ASCII untracked name" || report no "non-ASCII untracked file missing" "$pkg"
 grep -q '^+fresh' "$pkg" && grep -q '^+inner' "$pkg" \
   && report ok "--worktree from a subdirectory covers the whole repo" || report no "subdirectory run misses files" "$pkg"
-pkg=$(cd "$RP/sub" && "$SCR/review-package" "$RB" --worktree rel.diff 2>/dev/null)
-[ "$pkg" = "$RP/sub/rel.diff" ] && [ -f "$pkg" ] \
-  && report ok "relative OUTFILE resolves against the caller's directory" || report no "relative OUTFILE" "$pkg"
-rm -f "$RP/sub/rel.diff"
+# allow-listed without a prompt, so a caller-chosen output path would overwrite any file
+(cd "$RP/sub" && "$SCR/review-package" "$RB" --worktree "$ROOT/outside/victim" >/dev/null 2>&1); rc=$?
+[ "$rc" -eq 2 ] && [ ! -e "$ROOT/outside/victim" ] \
+  && report ok "an output path argument is refused" || report no "output path accepted" "rc=$rc"
 git -C "$RP" add -A && git -C "$RP" commit -q --no-gpg-sign -m change
 pkg=$(cd "$RP" && "$SCR/review-package" "$RB" HEAD 2>/dev/null)
 grep -q '^+changed' "$pkg" && report ok "commit range package after committing" || report no "commit range package" "$pkg"
