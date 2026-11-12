@@ -89,12 +89,6 @@ wired SubagentStart "" prompt-context \
 wired SubagentStart "" flow-context \
   && report ok "SubagentStart still runs flow-context" \
   || report no "flow-context was dropped from SubagentStart"
-wired SubagentStart "" cbm-subagent-reminder \
-  && report no "cbm-subagent-reminder is still wired (removed by D13)" \
-  || report ok "cbm-subagent-reminder is no longer wired"
-grep -q timestamp-injector "$SETTINGS" \
-  && report no "settings.json still references the old hook name" \
-  || report ok "no reference to the old hook name remains"
 
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]

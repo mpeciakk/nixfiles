@@ -121,7 +121,6 @@ fundamentals; or is visibly frustrated that the approach is not working.
   trace instrumentation, dead ends, guards after the fix.
 - [condition-based-waiting.md](condition-based-waiting.md) — flaky tests that
   sleep: wait for the condition, not a guessed delay.
-- `find-polluter.sh` — finds the test that leaves a file or directory behind.
 
 ## The measured case
 

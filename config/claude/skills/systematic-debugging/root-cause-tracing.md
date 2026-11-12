@@ -44,10 +44,8 @@ stacks for the test file and line that trigger it, and for a pattern (same
 test, same parameter).
 
 **Something appears during tests and you don't know which test makes it:**
-bisect with `find-polluter.sh` in this directory, from the project root —
-`bash ~/.claude/skills/systematic-debugging/find-polluter.sh '.git' 'src/**/*.test.ts'`.
-It runs the tests one by one and stops at the first that leaves the path
-behind.
+run the test files one by one from the project root and check for the path
+after each; the first that leaves it behind is the polluter.
 
 ## Dead end
 
