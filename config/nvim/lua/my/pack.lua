@@ -8,6 +8,10 @@ local specs = {
   "https://github.com/folke/which-key.nvim",
   "https://github.com/ibhagwan/fzf-lua",
   "https://github.com/stevearc/oil.nvim",
+  "https://github.com/lewis6991/gitsigns.nvim",
+  "https://github.com/dlyongemallo/diffview-plus.nvim",
+  "https://github.com/coder/claudecode.nvim",
+  "https://github.com/chomosuke/typst-preview.nvim",
 }
 
 -- vim.pack's lock repair writes any plugin dir still on disk back into the lockfile, which both

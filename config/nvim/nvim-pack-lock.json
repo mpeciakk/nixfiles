@@ -1,8 +1,16 @@
 {
   "plugins": {
+    "claudecode.nvim": {
+      "rev": "d1237072eb7c55f97b2d3c44b7971546edad0238",
+      "src": "https://github.com/coder/claudecode.nvim"
+    },
     "conform.nvim": {
       "rev": "016802de402556da54c36bd7359b441266b01cdd",
       "src": "https://github.com/stevearc/conform.nvim"
+    },
+    "diffview-plus.nvim": {
+      "rev": "fae72d6c981075dce2e0f946f002382ce0cb44e1",
+      "src": "https://github.com/dlyongemallo/diffview-plus.nvim"
     },
     "friendly-snippets": {
       "rev": "7a1c9f7897a4eb078b157a04c7af81e5869215b1",
@@ -11,6 +19,10 @@
     "fzf-lua": {
       "rev": "ded1c96d3d9d74634287d722431c26690968a4bf",
       "src": "https://github.com/ibhagwan/fzf-lua"
+    },
+    "gitsigns.nvim": {
+      "rev": "ef707fb93301a9b856f36eae4c8f56f5b988a794",
+      "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
     "mini.nvim": {
       "rev": "f9ac12d7cbd2563cfc2cce9a8152fc8df2ad0d6f",
@@ -27,6 +39,10 @@
     "tokyonight.nvim": {
       "rev": "cdc07ac78467a233fd62c493de29a17e0cf2b2b6",
       "src": "https://github.com/folke/tokyonight.nvim"
+    },
+    "typst-preview.nvim": {
+      "rev": "1c2e19486397be1c580b560fc50ee36abe329c46",
+      "src": "https://github.com/chomosuke/typst-preview.nvim"
     },
     "which-key.nvim": {
       "rev": "3aab2147e74890957785941f0c1ad87d0a44c15a",
