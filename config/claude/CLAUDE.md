@@ -37,11 +37,12 @@ Workflow rules:
 # Vault
 
 Report a decision or durable fact from your session (architecture, closed
-decision, pitfall, deployment state) to the session whose cwd is
-`/home/m/obsidian`; take its name from `ListAgents`. Send a pointer: what it is
-about plus the repo file that describes it. Never send task status, commit
-numbers or secrets. Never write to the vault yourself. Session not listed →
-the fact stays in the repo; report it next time.
+decision, pitfall, deployment state) to the session named `vault-inbox` on
+this machine. Send a pointer: what it is about plus the repo file that
+describes it. Never send task status, commit numbers or secrets. Never write
+to the vault yourself. `vault-inbox` not listed → the fact stays in the repo;
+report it next time. Don't message other sessions in `/home/m/obsidian` unless
+I ask — I talk to them.
 
 # Two machines: `pc` (desktop) and `laptop` (MacBook Air M2, Asahi)
 
