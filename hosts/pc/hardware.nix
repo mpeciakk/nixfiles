@@ -13,6 +13,8 @@
 
   boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usbhid" "sd_mod"];
   boot.kernelModules = ["kvm-intel"];
+  # machine-id z UUID w DMI; laptop go nie ma i bierze stały id z /persist (rollback-root)
+  boot.kernelParams = ["systemd.machine_id=firmware"];
   hardware.cpu.intel.updateMicrocode = true;
   hardware.enableRedistributableFirmware = true;
 

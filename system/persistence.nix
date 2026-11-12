@@ -48,7 +48,6 @@
 
     services.journald.settings.Journal.Storage = "persistent";
 
-    boot.kernelParams = ["systemd.machine_id=firmware"];
     systemd.suppressedSystemUnits = ["systemd-machine-id-commit.service"];
 
     boot.initrd.systemd.services.rollback-root = {
@@ -70,6 +69,10 @@
           btrfs subvolume delete --recursive /btrfs/@root-new
         fi
         btrfs subvolume snapshot /btrfs/@root-blank /btrfs/@root-new
+        # laptop nie ma UUID w DMI (systemd.machine_id=firmware losuje co boot), więc stały id leży w /persist
+        if [ -e /btrfs/@persist/etc/machine-id ]; then
+          install -D -m 0444 /btrfs/@persist/etc/machine-id /btrfs/@root-new/etc/machine-id
+        fi
 
         if [ -e /btrfs/@root ]; then
           mkdir -p /btrfs/@root-old
