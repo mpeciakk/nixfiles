@@ -16,18 +16,7 @@
   hardware.cpu.intel.updateMicrocode = true;
   hardware.enableRedistributableFirmware = true;
 
-  fileSystems = let
-    btrfs = subvol: {
-      device = "/dev/disk/by-label/nixos";
-      fsType = "btrfs";
-      options = ["subvol=${subvol}" "compress=zstd:3" "noatime"];
-    };
-  in {
-    "/" = btrfs "@root";
-    "/nix" = btrfs "@nix";
-    "/persist" = btrfs "@persist" // {neededForBoot = true;};
-    "/var/lib/nixos" = btrfs "@nixos-state" // {neededForBoot = true;};
-    "/home" = btrfs "@home" // {neededForBoot = true;};
+  fileSystems = {
     "/boot" = {
       device = "/dev/disk/by-label/BOOT";
       fsType = "vfat";
@@ -43,13 +32,9 @@
   services.btrfs.autoScrub.fileSystems = ["/mnt/backup"];
 
   services.xserver.videoDrivers = ["nvidia"];
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-  };
+  hardware.graphics.enable32Bit = true;
   hardware.nvidia = {
     open = true;
-    modesetting.enable = true;
     package = config.boot.kernelPackages.nvidiaPackages.latest;
   };
   environment.sessionVariables = {

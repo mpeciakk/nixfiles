@@ -18,8 +18,22 @@
       "/var/lib/hjem" = "0755";
     };
 
-    fileSystems =
-      lib.mapAttrs (dir: _: {
+    # układ subwolumenów obu hostów; rollback-root niżej zakłada label nixos i @root
+    fileSystems = let
+      btrfs = subvol: {
+        device = "/dev/disk/by-label/nixos";
+        fsType = "btrfs";
+        options = ["subvol=${subvol}" "compress=zstd:3" "noatime"];
+      };
+    in
+      {
+        "/" = btrfs "@root";
+        "/nix" = btrfs "@nix";
+        "/persist" = btrfs "@persist" // {neededForBoot = true;};
+        "/var/lib/nixos" = btrfs "@nixos-state" // {neededForBoot = true;};
+        "/home" = btrfs "@home" // {neededForBoot = true;};
+      }
+      // lib.mapAttrs (dir: _: {
         device = "/persist${dir}";
         fsType = "none";
         options = ["bind"];

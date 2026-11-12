@@ -31,8 +31,6 @@
     exec ${lib.getExe pkgs.soteria}
   '');
 
-  services.gnome.gnome-keyring.enable = true;
-  security.pam.services.greetd.enableGnomeKeyring = true;
   # gcr nadpisywał SSH_AUTH_SOCK w całej sesji, a klucz do podpisu commitów jest tylko w agencie 1Password (config/uwsm/env)
   services.gnome.gcr-ssh-agent.enable = false;
 
@@ -41,11 +39,6 @@
     extraPortals = [pkgs.xdg-desktop-portal-gnome];
   };
 
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    pulse.enable = true;
-  };
   security.rtkit.enable = true;
 
   services.udisks2.enable = true;

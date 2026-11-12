@@ -16,7 +16,12 @@ in {
         dotfiles = import ./dotfiles.nix;
       };
       modules =
-        [{nixpkgs.hostPlatform = system;}]
+        [
+          {
+            nixpkgs.hostPlatform = system;
+            networking.hostName = name;
+          }
+        ]
         ++ importDir ../hosts/${name}
         ++ importDir ../system
         ++ lib.concatMap (trait: importDir ../features/${trait}) traits;

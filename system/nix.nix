@@ -1,5 +1,6 @@
 {inputs, ...}: {
   nixpkgs.config.allowUnfree = true;
+  system.stateVersion = "26.11";
 
   nix = {
     channel.enable = false;

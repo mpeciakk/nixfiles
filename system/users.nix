@@ -20,9 +20,4 @@
   };
 
   environment.shells = [pkgs.nushell];
-
-  hjem.users.m = {
-    user = "m";
-    directory = "/home/m";
-  };
 }
