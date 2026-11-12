@@ -9,8 +9,10 @@ vim.g.mapleader = " "
 
 require("my.options")
 require("my.pack")
+require("my.ui")
 require("my.autocmds")
 require("my.lsp")
 require("my.completion")
 require("my.format")
 require("my.editing")
+require("my.navigation")
