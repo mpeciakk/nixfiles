@@ -16,6 +16,7 @@
       mpv
       ffmpeg
       playerctl
+      catppuccin-cursors.mochaDark # motyw wybiera config/niri/config.kdl (cursor)
       inputs.jfsh.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 
@@ -28,8 +29,6 @@
       // {
         "quickshell".source = "/home/m/projects/quickshell-dynamic-island";
         "xdg-terminals.list".source = dotfiles.source "config/xdg-terminals.list";
-        "dotfiles/wallpaper-dark.png".source = ./wallpaper-dark.png;
-        "dotfiles/wallpaper-light.png".source = ./wallpaper-light.png;
       };
 
     xdg.data.files = builtins.listToAttrs (map (n: {

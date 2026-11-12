@@ -1,4 +1,8 @@
 {
+  # tapety w rozdzielczości tego hosta (pc 3840x2160, laptop 2560x1664 z notchem)
+  hjem.users.m.xdg.config.files."dotfiles/wallpaper-dark.png".source = ./wallpaper-dark.png;
+  hjem.users.m.xdg.config.files."dotfiles/wallpaper-light.png".source = ./wallpaper-light.png;
+
   hjem.users.m.xdg.config.files."niri/output.kdl".text = ''
     output "DP-1" {
         mode "2560x1440@74.924"

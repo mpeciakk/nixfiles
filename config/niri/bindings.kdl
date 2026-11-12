@@ -12,7 +12,7 @@ binds {
     // Wyspa binds not taken yet (W9), each one needs its conflict settled first:
     // Mod+A → island toggle control
     // Mod+N → island toggle center
-    // Mod+M → island toggle media (conflicts: edexplore macro)
+    // Mod+M → island toggle media
     // Mod+Shift+E → island toggle power (conflicts: screenshot)
     // Mod+Shift+H → island hide
     // XF86MonBrightnessUp / XF86MonBrightnessDown → brightnessctl set 5%+ / 5%-
@@ -82,7 +82,4 @@ binds {
     XF86AudioNext        allow-when-locked=true repeat=false { spawn "playerctl" "next"; }
     XF86AudioPrev        allow-when-locked=true repeat=false { spawn "playerctl" "previous"; }
     XF86AudioStop        allow-when-locked=true repeat=false { spawn "playerctl" "stop"; }
-
-    // edexplore: plot the next Spansh waypoint in the galaxy map (hands-free macro)
-    Mod+M repeat=false { spawn "/home/m/projects/edcompanion/.venv/bin/edexplore-ctl" "macro"; }
 }

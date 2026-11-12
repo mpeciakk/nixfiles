@@ -10,6 +10,11 @@ spawn-at-startup "wl-paste" "--watch" "cliphist" "store"
 
 prefer-no-csd
 
+cursor {
+    xcursor-theme "catppuccin-mocha-dark-cursors"
+    xcursor-size 24
+}
+
 blur {
     passes 3
     offset 5
