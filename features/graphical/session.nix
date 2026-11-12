@@ -33,6 +33,8 @@
 
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.greetd.enableGnomeKeyring = true;
+  # gcr nadpisywał SSH_AUTH_SOCK w całej sesji, a klucz do podpisu commitów jest tylko w agencie 1Password (config/uwsm/env)
+  services.gnome.gcr-ssh-agent.enable = false;
 
   xdg.portal = {
     enable = true;

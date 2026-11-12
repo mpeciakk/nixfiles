@@ -11,6 +11,8 @@
     systemd.services.mutagen = {
       description = "Mutagen daemon";
       wantedBy = ["default.target"];
+      # hjem restartuje unit tylko przy zmianie triggera; stary daemon odrzuca nowe CLI (version mismatch)
+      restartTriggers = [pkgs.mutagen];
       path = [pkgs.openssh];
       environment.MUTAGEN_DATA_DIRECTORY = "%h/.local/share/mutagen";
       serviceConfig = {

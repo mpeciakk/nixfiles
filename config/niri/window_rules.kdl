@@ -17,7 +17,7 @@ window-rule {
 }
 
 window-rule {
-    match app-id="1password"
+    match app-id=r#"^(1password|com\.onepassword\.OnePassword)$"#
     open-floating true
     open-focused true
     block-out-from "screencast"

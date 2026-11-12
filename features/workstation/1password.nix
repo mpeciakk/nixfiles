@@ -21,6 +21,7 @@
   hjem.users.m.systemd.services."1password" = {
     description = "1Password";
     after = ["graphical-session.target"];
+    partOf = ["graphical-session.target"];
     wantedBy = ["graphical-session.target"];
     enableDefaultPath = false;
     serviceConfig = {

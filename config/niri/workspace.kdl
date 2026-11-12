@@ -1,8 +1,11 @@
+// open-on-output to lista preferencji (wygrywa pierwsze podłączone): DP-2 to główny monitor pc, DP-1 zewnętrzny monitor laptopa
 workspace "1" {
+  open-on-output "DP-2"
   open-on-output "DP-1"
 }
 
 workspace "2" {
+  open-on-output "DP-2"
   open-on-output "DP-1"
 }
 
@@ -11,25 +14,31 @@ workspace "3" {
 }
 
 workspace "4" {
+  open-on-output "DP-2"
   open-on-output "DP-1"
 }
 
 workspace "5" {
+  open-on-output "DP-2"
   open-on-output "DP-1"
 }
 
 workspace "6" {
+  open-on-output "DP-2"
   open-on-output "DP-1"
 }
 
 workspace "7" {
+  open-on-output "DP-2"
   open-on-output "DP-1"
 }
 
 workspace "8" {
+  open-on-output "DP-2"
   open-on-output "DP-1"
 }
 
 workspace "9" {
+  open-on-output "DP-2"
   open-on-output "DP-1"
 }
