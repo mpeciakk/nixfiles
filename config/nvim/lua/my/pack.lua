@@ -1,0 +1,26 @@
+-- Pure-Lua plugins. Native ones (nvim-treesitter + parsers, blink.cmp) come from the Nix wrapper.
+local specs = {
+  "https://github.com/neovim/nvim-lspconfig",
+  "https://github.com/stevearc/conform.nvim",
+  "https://github.com/nvim-mini/mini.nvim",
+  "https://github.com/rafamadriz/friendly-snippets",
+}
+
+-- vim.pack's lock repair writes any plugin dir still on disk back into the lockfile, which both
+-- machines share. Drop dirs no longer in the list before the first vim.pack call reads them.
+local wanted = {}
+for _, src in ipairs(specs) do
+  wanted[src:match("[^/]+$")] = true
+end
+local opt_dir = vim.fs.joinpath(vim.fn.stdpath("data"), "site", "pack", "core", "opt")
+for name, kind in vim.fs.dir(opt_dir) do
+  if kind == "directory" and not wanted[name] then
+    vim.fs.rm(vim.fs.joinpath(opt_dir, name), { recursive = true, force = true })
+  end
+end
+
+vim.pack.add(specs, { confirm = false })
+
+vim.api.nvim_create_user_command("PackSync", function()
+  vim.pack.update(nil, { target = "lockfile" })
+end, { desc = "Move installed plugins to the lockfile's revisions (after a change on the other machine)" })
