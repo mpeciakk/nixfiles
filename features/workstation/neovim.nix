@@ -55,6 +55,7 @@
     vscode-langservers-extracted
     tinymist
     websocat
+    tdf
     fzf
     fd
   ];
