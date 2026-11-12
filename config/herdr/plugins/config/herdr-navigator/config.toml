@@ -124,7 +124,7 @@ inherit_herdr = true
 
 # Keep roots short; zoxide should handle most frequent directories.
 [[roots]]
-path = "~/workspace"
+path = "~/work"
 max_depth = 3
 
 [[roots]]
