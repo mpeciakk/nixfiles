@@ -18,11 +18,10 @@ cancels a render still running when the next one arrives, so this stays cheap â€
 one git call for branch and dirt, one for the run state.
 """
 
-import importlib.machinery
-import importlib.util
 import json
 import os
 import re
+import runpy
 import subprocess
 import sys
 from datetime import datetime
@@ -49,13 +48,7 @@ def git(cwd, *args):
 
 def run_state(cwd):
     try:
-        path = os.path.join(HERE, "flow-state")
-        sys.dont_write_bytecode = True
-        loader = importlib.machinery.SourceFileLoader("flow_state", path)
-        spec = importlib.util.spec_from_loader("flow_state", loader)
-        module = importlib.util.module_from_spec(spec)
-        loader.exec_module(module)
-        return module.load(cwd)
+        return runpy.run_path(os.path.join(HERE, "flow-state"))["load"](cwd)
     except Exception:
         return None
 

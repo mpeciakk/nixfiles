@@ -14,24 +14,17 @@ Silent when there is no run. State resolution comes from flow-state, the one
 authority on where the file lives.
 """
 
-import importlib.machinery
-import importlib.util
 import json
 import os
+import runpy
 import sys
 
 FLOW_STATE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "flow-state")
 
 
 def load_state(cwd):
-    # Importing would otherwise drop a __pycache__ beside it — in the dotfiles
-    # repo, on every subagent start.
-    sys.dont_write_bytecode = True
-    loader = importlib.machinery.SourceFileLoader("flow_state", FLOW_STATE)
-    spec = importlib.util.spec_from_loader("flow_state", loader)
-    module = importlib.util.module_from_spec(spec)
-    loader.exec_module(module)
-    return module.load(cwd)
+    # run_path, not import: an import would drop a __pycache__ beside it in the dotfiles repo
+    return runpy.run_path(FLOW_STATE)["load"](cwd)
 
 
 def emit(event, context):

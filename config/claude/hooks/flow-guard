@@ -30,13 +30,13 @@ Fails open by design — malformed state, an unreadable file, any exception: all
 A guard must never break a session it cannot judge.
 """
 
-import importlib.machinery
-import importlib.util
 import json
 import os
 import re
+import runpy
 import shlex
 import sys
+import types
 
 HERE = os.path.dirname(os.path.realpath(__file__))
 EDIT_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
@@ -73,13 +73,7 @@ def deny(reason):
 
 def flow_state():
     """The one authority on where run state lives — shared with flow-context."""
-    sys.dont_write_bytecode = True
-    path = os.path.join(HERE, "flow-state")
-    loader = importlib.machinery.SourceFileLoader("flow_state", path)
-    spec = importlib.util.spec_from_loader("flow_state", loader)
-    module = importlib.util.module_from_spec(spec)
-    loader.exec_module(module)
-    return module
+    return types.SimpleNamespace(**runpy.run_path(os.path.join(HERE, "flow-state")))
 
 
 def target_file(payload):
