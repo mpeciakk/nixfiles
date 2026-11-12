@@ -44,18 +44,9 @@
 
   hardware.bluetooth.enable = true;
 
-  system.nixos-core.persistence.stores."/persist".directories = [
-    {
-      target = "/etc/NetworkManager/system-connections";
-      mode = "0700";
-    }
-    {
-      target = "/var/lib/iwd";
-      mode = "0700";
-    }
-    {
-      target = "/var/lib/bluetooth";
-      mode = "0700";
-    }
-  ];
+  persist.directories = {
+    "/etc/NetworkManager/system-connections" = "0700";
+    "/var/lib/iwd" = "0700";
+    "/var/lib/bluetooth" = "0700";
+  };
 }

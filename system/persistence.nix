@@ -1,75 +1,76 @@
 {
-  nixos-core-module,
+  config,
+  lib,
   pkgs,
   ...
 }: {
-  imports = [nixos-core-module];
-
-  system.nixos-core = {
-    enable = true;
-    components = {
-      # defaulty tych trzech czytają usunięte boot.initrd.systemd.enable; jawna wartość ich nie liczy
-      extraUtilsCommand.enable = false;
-      bootStage1.enable = false;
-      initialRamdisk.enable = false;
-      bootStage2.enable = false;
-      etcActivation.enable = false;
-      userGroupsActivation.enable = false;
-      nixosInitCompat.enable = false;
-    };
-    persistence = {
-      enable = true;
-      stores."/persist".directories = [
-        "/var/lib/systemd/timers"
-        "/var/log/journal"
-        # manifest hjem: bez niego każdy boot to aktywacja "first", która nie usuwa linków wyrzuconych z configu
-        "/var/lib/hjem"
-      ];
-    };
+  # katalog -> tryb nadawany tylko przy pierwszym utworzeniu w /persist (istniejący zostaje, np. journal 2755 z tmpfiles)
+  options.persist.directories = lib.mkOption {
+    type = lib.types.attrsOf lib.types.str;
+    default = {};
   };
 
-  services.journald.settings.Journal.Storage = "persistent";
+  config = {
+    persist.directories = {
+      "/var/lib/systemd/timers" = "0755";
+      "/var/log/journal" = "0755";
+      # manifest hjem: bez niego każdy boot to aktywacja "first", która nie usuwa linków wyrzuconych z configu
+      "/var/lib/hjem" = "0755";
+    };
 
-  boot.kernelParams = ["systemd.machine_id=firmware"];
-  systemd.suppressedSystemUnits = ["systemd-machine-id-commit.service"];
-  systemd.services.systemd-journal-flush = {
-    after = ["nixos-core-persistence.service"];
-    wants = ["nixos-core-persistence.service"];
-  };
+    fileSystems =
+      lib.mapAttrs (dir: _: {
+        device = "/persist${dir}";
+        fsType = "none";
+        options = ["bind"];
+      })
+      config.persist.directories;
 
-  boot.initrd.systemd.services.rollback-root = {
-    description = "Rollback btrfs @root do @root-blank";
-    wantedBy = ["initrd.target"];
-    requires = ["dev-disk-by\\x2dlabel-nixos.device"];
-    after = ["dev-disk-by\\x2dlabel-nixos.device"];
-    before = ["sysroot.mount"];
-    unitConfig.DefaultDependencies = "no";
-    serviceConfig.Type = "oneshot";
-    path = [pkgs.btrfs-progs pkgs.coreutils pkgs.findutils pkgs.util-linux];
-    script = ''
-      mkdir -p /btrfs
-      mount -t btrfs -o subvol=/ /dev/disk/by-label/nixos /btrfs
+    # bind bez źródła wywala local-fs.target, a root ma hasło "!"; aktywacja przy boocie idzie w initrd, przed montowaniem
+    system.activationScripts.persist-dirs.text = lib.concatStrings (lib.mapAttrsToList (dir: mode: ''
+        mkdir -p -m ${mode} /persist${dir}
+      '')
+      config.persist.directories);
 
-      # nowy root powstaje obok starego: nieudany snapshot (ENOSPC, brak @root-blank) zostawia działający @root
-      # resztka po przerwanym boocie musi zniknąć, bo snapshot do istniejącego katalogu ląduje w nim jako podkatalog
-      if [ -e /btrfs/@root-new ]; then
-        btrfs subvolume delete --recursive /btrfs/@root-new
-      fi
-      btrfs subvolume snapshot /btrfs/@root-blank /btrfs/@root-new
+    services.journald.settings.Journal.Storage = "persistent";
 
-      if [ -e /btrfs/@root ]; then
-        mkdir -p /btrfs/@root-old
-        stamp=$(date --date="@$(stat -c %Y /btrfs/@root)" +%Y-%m-%d_%H%M%S)
-        mv /btrfs/@root "/btrfs/@root-old/$stamp"
-        # mv zostawia mtime z bootu tego roota, a po nim liczy się 14 dni: bez touch po długim uptime archiwum znikałoby od razu
-        touch "/btrfs/@root-old/$stamp" || true
-      fi
-      mv /btrfs/@root-new /btrfs/@root
+    boot.kernelParams = ["systemd.machine_id=firmware"];
+    systemd.suppressedSystemUnits = ["systemd-machine-id-commit.service"];
 
-      # sprzątanie na końcu: nieudane kasowanie archiwum nie może zostawić systemu bez @root
-      find /btrfs/@root-old -mindepth 1 -maxdepth 1 -mtime +14 \
-        -exec btrfs subvolume delete --recursive {} +
-      umount /btrfs
-    '';
+    boot.initrd.systemd.services.rollback-root = {
+      description = "Rollback btrfs @root do @root-blank";
+      wantedBy = ["initrd.target"];
+      requires = ["dev-disk-by\\x2dlabel-nixos.device"];
+      after = ["dev-disk-by\\x2dlabel-nixos.device"];
+      before = ["sysroot.mount"];
+      unitConfig.DefaultDependencies = "no";
+      serviceConfig.Type = "oneshot";
+      path = [pkgs.btrfs-progs pkgs.coreutils pkgs.findutils pkgs.util-linux];
+      script = ''
+        mkdir -p /btrfs
+        mount -t btrfs -o subvol=/ /dev/disk/by-label/nixos /btrfs
+
+        # nowy root powstaje obok starego: nieudany snapshot (ENOSPC, brak @root-blank) zostawia działający @root
+        # resztka po przerwanym boocie musi zniknąć, bo snapshot do istniejącego katalogu ląduje w nim jako podkatalog
+        if [ -e /btrfs/@root-new ]; then
+          btrfs subvolume delete --recursive /btrfs/@root-new
+        fi
+        btrfs subvolume snapshot /btrfs/@root-blank /btrfs/@root-new
+
+        if [ -e /btrfs/@root ]; then
+          mkdir -p /btrfs/@root-old
+          stamp=$(date --date="@$(stat -c %Y /btrfs/@root)" +%Y-%m-%d_%H%M%S)
+          mv /btrfs/@root "/btrfs/@root-old/$stamp"
+          # mv zostawia mtime z bootu tego roota, a po nim liczy się 14 dni: bez touch po długim uptime archiwum znikałoby od razu
+          touch "/btrfs/@root-old/$stamp" || true
+        fi
+        mv /btrfs/@root-new /btrfs/@root
+
+        # sprzątanie na końcu: nieudane kasowanie archiwum nie może zostawić systemu bez @root
+        find /btrfs/@root-old -mindepth 1 -maxdepth 1 -mtime +14 \
+          -exec btrfs subvolume delete --recursive {} +
+        umount /btrfs
+      '';
+    };
   };
 }

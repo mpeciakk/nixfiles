@@ -14,7 +14,6 @@ in {
       specialArgs = {
         inherit inputs;
         dotfiles = import ./dotfiles.nix;
-        nixos-core-module = import "${inputs.nixos-core}/nix/modules/nixos.nix" inputs.nixos-core;
       };
       modules =
         [{nixpkgs.hostPlatform = system;}]
