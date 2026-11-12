@@ -22,6 +22,8 @@
       stores."/persist".directories = [
         "/var/lib/systemd/timers"
         "/var/log/journal"
+        # manifest hjem: bez niego każdy boot to aktywacja "first", która nie usuwa linków wyrzuconych z configu
+        "/var/lib/hjem"
       ];
     };
   };
@@ -48,6 +50,13 @@
       mkdir -p /btrfs
       mount -t btrfs -o subvol=/ /dev/disk/by-label/nixos /btrfs
 
+      # nowy root powstaje obok starego: nieudany snapshot (ENOSPC, brak @root-blank) zostawia działający @root
+      # resztka po przerwanym boocie musi zniknąć, bo snapshot do istniejącego katalogu ląduje w nim jako podkatalog
+      if [ -e /btrfs/@root-new ]; then
+        btrfs subvolume delete --recursive /btrfs/@root-new
+      fi
+      btrfs subvolume snapshot /btrfs/@root-blank /btrfs/@root-new
+
       if [ -e /btrfs/@root ]; then
         mkdir -p /btrfs/@root-old
         stamp=$(date --date="@$(stat -c %Y /btrfs/@root)" +%Y-%m-%d_%H%M%S)
@@ -55,10 +64,9 @@
         # mv zostawia mtime z bootu tego roota, a po nim liczy się 14 dni: bez touch po długim uptime archiwum znikałoby od razu
         touch "/btrfs/@root-old/$stamp" || true
       fi
+      mv /btrfs/@root-new /btrfs/@root
 
-      # snapshot przed sprzątaniem: nieudane kasowanie archiwum nie może zostawić systemu bez @root
-      btrfs subvolume snapshot /btrfs/@root-blank /btrfs/@root
-
+      # sprzątanie na końcu: nieudane kasowanie archiwum nie może zostawić systemu bez @root
       find /btrfs/@root-old -mindepth 1 -maxdepth 1 -mtime +14 \
         -exec btrfs subvolume delete --recursive {} +
       umount /btrfs
