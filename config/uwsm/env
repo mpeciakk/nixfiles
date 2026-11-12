@@ -1,6 +1,5 @@
 # Host-agnostic session environment, sourced by uwsm. GPU variables live per host in
 # Nix (hosts/<host>/hardware.nix, environment.sessionVariables).
-export XDG_SESSION_TYPE=wayland
 export QT_QPA_PLATFORM=wayland
 export SDL_VIDEODRIVER=wayland
 export ELECTRON_OZONE_PLATFORM_HINT=wayland

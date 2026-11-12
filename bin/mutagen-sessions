@@ -32,8 +32,7 @@ IGNORES=(
   build/ dist/ out/ target/
 )
 
-ign_args=()
-for p in "${IGNORES[@]}"; do ign_args+=("--ignore=$p"); done
+ign_args=("${IGNORES[@]/#/--ignore=}")
 
 # Bookkeeping gita, czysto lokalny per-maszyna — nie stan repo. Branch,
 # HEAD, config i obiekty muszą się propagować (żeby obie maszyny dzieliły
@@ -47,8 +46,7 @@ GIT_IGNORES=(
   '**/.git/ORIG_HEAD' '**/.git/MERGE_HEAD' '**/.git/MERGE_MSG' '**/.git/MERGE_MODE'
   '**/.git/COMMIT_EDITMSG' '**/.git/FETCH_HEAD'
 )
-git_ign_args=()
-for p in "${GIT_IGNORES[@]}"; do git_ign_args+=("--ignore=$p"); done
+git_ign_args=("${GIT_IGNORES[@]/#/--ignore=}")
 
 ensure() {
   local name=$1 local_path=$2 remote=$3

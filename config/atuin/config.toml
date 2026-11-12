@@ -1,18 +1,8 @@
 auto_sync = true
 enter_accept = true
 
-[stats]
-
-[keys]
-
 [sync]
 records = true
-
-[preview]
-
-[daemon]
-
-[search]
 
 [logs]
 dir = "~/.local/state/atuin/logs"
