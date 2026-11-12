@@ -12,6 +12,8 @@
 in {
   services.logiops = {
     enable = true;
+    # domyślne 500 ms: po boocie logid nie wykrywał myszy, dopóki sama nie wysłała raportu HID++
+    config.io_timeout = 2000.0;
     config.devices = [
       {
         name = "MX Master 3S";
