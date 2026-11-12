@@ -17,7 +17,6 @@ export MUTAGEN_DATA_DIRECTORY="$XDG_DATA_HOME"/mutagen
 export NPM_CONFIG_PREFIX="$XDG_DATA_HOME"/toolchains/npm
 export NPM_CONFIG_CACHE="$XDG_CACHE_HOME"/npm
 export NPM_CONFIG_INIT_MODULE="$XDG_CONFIG_HOME"/npm/npm-init.js
-export WAKATIME_HOME="$XDG_CONFIG_HOME"/wakatime
 # Session-wide, not only in nushell: git signs commits with a key that lives in the 1Password agent.
 export SSH_AUTH_SOCK="$HOME"/.1password/agent.sock
 # Non-default GNUPGHOME moves gpg-agent's socket dir to a hashed /run/user/$UID/gnupg/d.*,
