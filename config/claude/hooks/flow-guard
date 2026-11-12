@@ -4,7 +4,7 @@
 Enforces three things:
 
   1. **One workspace per run.** A new `EnterWorktree`, `worktree add`, and an
-     `Agent` dispatched with `isolation: "worktree"` are denied once a worktree
+     `Agent` dispatched with `isolation: "worktree"` or `"remote"` are denied once a worktree
      is recorded; re-entering the recorded one by `path` is allowed. A second
      workspace is how a run loses track of where its work went.
 
@@ -172,7 +172,7 @@ def check_workspace(payload, state, worktree, task):
         if isinstance(path, str) and path and os.path.realpath(path) == os.path.realpath(worktree):
             allow()  # re-entering the recorded workspace: the way back in
     elif tool == "Agent":
-        if tool_input.get("isolation") != "worktree":
+        if tool_input.get("isolation") not in ("worktree", "remote"):
             allow()
     else:  # Bash
         command = tool_input.get("command")

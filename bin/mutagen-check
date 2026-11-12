@@ -30,7 +30,8 @@ WAIT=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -f|--flush) FLUSH=1; shift ;;
-    -w|--wait)  WAIT="${2:?-w wymaga liczby sekund}"; shift 2 ;;
+    -w|--wait)  WAIT="${2:?-w wymaga liczby sekund}"; shift 2
+                [[ "$WAIT" =~ ^[0-9]+$ ]] || { echo "-w wymaga liczby sekund, dostał: $WAIT" >&2; exit 2; } ;;
     -h|--help)  grep '^#' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "Nieznany argument: $1" >&2; exit 2 ;;
   esac

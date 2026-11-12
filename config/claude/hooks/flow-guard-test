@@ -200,6 +200,7 @@ check "EnterWorktree re-entering via a ../ path" allow "$(enter_payload "$REPO" 
 check "EnterWorktree pointing elsewhere" deny "$(enter_payload "$REPO" "$EXT")"
 check "Agent with isolation=worktree" deny "$(agent_payload "$WT" worktree)"
 check "Agent without isolation" allow "$(agent_payload "$WT")"
+check "Agent with isolation=remote" deny "$(agent_payload "$WT" remote)"
 check "unrelated bash command" allow "$(bash_payload "$WT" 'npm test')"
 check "git commit (not enforced, by design)" allow "$(bash_payload "$REPO" 'git commit -m x')"
 
@@ -296,12 +297,17 @@ for n in 1 2 3 4 5 6 7 8; do "$STATE" --cwd "$ORD" task "$n" started >/dev/null 
 
 echo "=== cost and process hygiene ==="
 SHIM=$ROOT/shim; mkdir -p "$SHIM"
-printf '#!/bin/sh\necho "$@" >> %s/git.log\nexec /usr/bin/git "$@"\n' "$ROOT" > "$SHIM/git"
+# resolved before PATH changes: NixOS has no /usr/bin/git, and command -v inside the shim finds the shim
+printf '#!/bin/sh\necho "$@" >> %s/git.log\nexec %s "$@"\n' "$ROOT" "$(command -v git)" > "$SHIM/git"
 chmod +x "$SHIM/git"; : > "$ROOT/git.log"
 PATH="$SHIM:$PATH" decide "$(edit_payload "$REPO" "$REPO/app.py")" >/dev/null
 n=$(wc -l < "$ROOT/git.log")
 [ "$n" -le 2 ] && report ok "guard uses at most 2 git calls per invocation" "$n" \
   || report no "guard git calls" "$n"
+# the count means nothing unless git really ran: a broken shim fails open with the same 2 calls
+got=$(PATH="$SHIM:$PATH" decide "$(edit_payload "$REPO" "$REPO/.flow/run/state.json" "" "" Write)")
+[ "$got" = deny ] && report ok "guard still decides through the git shim" \
+  || report no "guard under the git shim" "got=$got want=deny"
 COLD=$ROOT/cold; mkrepo "$COLD" >/dev/null || fixture_fail "cold repo"
 P=$(bash_payload "$COLD" ls)
 s=$(date +%s%N); for _ in $(seq 10); do printf '%s' "$P" | "$GUARD" >/dev/null 2>&1; done; e=$(date +%s%N)
@@ -721,6 +727,8 @@ DONE_CMD='~/.claude/hooks/flow-state task 3 done "aaa..bbb"'
 transcript "$ROOT/t-high.jsonl" 320000 || fixture_fail "transcript fixture"
 case "$(cc_out "$(cc_payload "$ROOT/t-high.jsonl" "$DONE_CMD")")" in *"/clear"*320k*|*320k*"/clear"*) report ok "context check fires above 300k";;
   *) report no "context check silent at 320k" "$(cc_out "$(cc_payload "$ROOT/t-high.jsonl" "$DONE_CMD")")";; esac
+case "$(cc_out "$(cc_payload "$ROOT/t-high.jsonl" '~/.claude/hooks/flow-state task 3 Done "a..b"')")" in *"/clear"*) report ok "context check fires on a capitalised Done";;
+  *) report no "context check silent on Done (flow-state accepts any case)";; esac
 transcript "$ROOT/t-low.jsonl" 290000 || fixture_fail "transcript fixture"
 [ -z "$(cc_out "$(cc_payload "$ROOT/t-low.jsonl" "$DONE_CMD")")" ] \
   && report ok "context check silent below 300k" || report no "context check fired at 290k"
