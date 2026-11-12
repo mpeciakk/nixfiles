@@ -45,16 +45,16 @@ the fact stays in the repo; report it next time.
 
 # Two machines: `pc` (desktop) and `laptop` (MacBook Air M2, Asahi)
 
-- Only the `[CTX] <host>` line in a turn tells you the machine — not the
-  hostname (`ciek` on both), the prompt or paths. A turn without `[CTX]` is not
-  attributed to any host.
+- Only the `[CTX] <host>` line in a turn tells you the machine (the hook reads
+  the hostname, `pc` or `laptop`) — not the prompt or paths. A turn without
+  `[CTX]` is not attributed to any host.
 - `~/projects`, `~/work`, `~/obsidian` and `~/.claude/projects` are one working
   tree with one `.git` on both machines: nothing to merge between hosts, a
   branch switch on one is a switch on both. Exception: `~/zs1` syncs without
   `.git`, so its git history is separate on each machine.
 - Never run git operations in the same repo on both machines at once.
 - Write a machine-dependent fact (spec, note, commit, report) with the name
-  `pc` or `laptop`, never "this machine" or "`ciek`".
+  `pc` or `laptop`, never "this machine".
 
 # Rules
 

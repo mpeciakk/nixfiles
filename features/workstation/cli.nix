@@ -25,7 +25,7 @@
       // dotfiles.link "herdr-automatic-rename" ["config.sh"]
       // dotfiles.linkTree "nvim"
       // builtins.mapAttrs (_: f: f // {clobber = true;}) (
-        dotfiles.link "git" ["config" "ignore"]
+        dotfiles.link "git" ["config" "ignore" "allowed_signers"]
         // dotfiles.link "superfile" ["config.toml"]
       );
 
