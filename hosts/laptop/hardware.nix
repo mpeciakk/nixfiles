@@ -31,6 +31,9 @@
 
   hardware.bluetooth.enable = true;
 
+  # Quickshell's battery indicator (services/Battery.qml) reads UPower
+  services.upower.enable = true;
+
   persist.directories = {
     "/etc/NetworkManager/system-connections" = "0700";
     "/var/lib/iwd" = "0700";
