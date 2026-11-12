@@ -11,6 +11,8 @@
   # m1n1/U-Boot nie mają zmiennych EFI; ESP Asahi ma ~500 MB
   boot.loader.efi.canTouchEfiVariables = lib.mkForce false;
   boot.loader.systemd-boot.configurationLimit = lib.mkForce 3;
+  # lutowany dysk bez LUKS: init=/bin/sh z menu boota to najtańsza droga złodzieja do danych
+  boot.loader.systemd-boot.editor = false;
 
   boot.kernelParams = ["appledrm.show_notch=1"];
 

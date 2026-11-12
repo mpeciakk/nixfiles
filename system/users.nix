@@ -13,7 +13,7 @@
     m = {
       isNormalUser = true;
       uid = 1000;
-      extraGroups = ["wheel" "input" "kvm" "uucp" "lp" "audio"];
+      extraGroups = ["wheel" "kvm" "dialout" "lp" "audio"];
       shell = pkgs.nushell;
       hashedPasswordFile = "/persist/secrets/m.passwd";
     };

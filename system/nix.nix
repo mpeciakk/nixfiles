@@ -9,7 +9,6 @@
     settings = {
       experimental-features = ["nix-command" "flakes"];
       use-xdg-base-directories = true;
-      trusted-users = ["@wheel"];
       auto-optimise-store = true;
       warn-dirty = false;
     };
