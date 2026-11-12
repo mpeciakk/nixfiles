@@ -12,13 +12,9 @@
       lazydocker
     ];
 
-    xdg.config.files =
-      dotfiles.link "npm" ["npmrc"]
-      // {
-        "uv/uv.toml".text = ''
-          python-preference = "only-managed"
-        '';
-      };
+    xdg.config.files."uv/uv.toml".text = ''
+      python-preference = "only-managed"
+    '';
 
     # ~/.claude/skills to zwykły katalog z linkiem na każdy skill: obok publicznych z repo
     # mogą stać prywatne, a skille synchronizowane przez Claude'a nie lądują w repo
