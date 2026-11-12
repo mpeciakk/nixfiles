@@ -16,8 +16,7 @@
       python-preference = "only-managed"
     '';
 
-    # ~/.claude/skills to zwykły katalog z linkiem na każdy skill: obok publicznych z repo
-    # mogą stać prywatne, a skille synchronizowane przez Claude'a nie lądują w repo
+    # link per skill, not the whole dir: private and Claude-synced skills stay out of the repo
     files =
       builtins.listToAttrs (map (n: {
         name = ".claude/${n}";
@@ -30,7 +29,6 @@
         name = ".claude/skills/${n}";
         value.source = dotfiles.source "config/claude/skills/${n}";
       }) (dotfiles.subdirs "config/claude/skills"))
-      # skill z danymi firmowymi: poza publicznym repo, w ~/work (mutagen)
       // {".claude/skills/knowledge-transfer".source = "/home/m/work/claude/knowledge-transfer";};
   };
 }

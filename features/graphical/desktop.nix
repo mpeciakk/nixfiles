@@ -16,7 +16,7 @@
       mpv
       ffmpeg
       playerctl
-      catppuccin-cursors.mochaDark # motyw wybiera config/niri/config.kdl (cursor)
+      catppuccin-cursors.mochaDark # theme set in niri config.kdl
       inputs.jfsh.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 

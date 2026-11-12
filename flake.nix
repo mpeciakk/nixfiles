@@ -37,7 +37,7 @@
     mylib = import ./lib {inherit inputs;};
   in {
     nixosConfigurations = import ./hosts {inherit mylib;};
-    # installer laptopa z tych samych pinów: kernel z ISO = kernel systemu, nixos-install go nie buduje
+    # same pins as the system, so nixos-install reuses the ISO kernel instead of building it
     packages.aarch64-linux.installer = inputs.nixos-apple-silicon.packages.aarch64-linux.installer-bootstrap;
     formatter.x86_64-linux = inputs.nixpkgs.legacyPackages.x86_64-linux.alejandra;
     formatter.aarch64-linux = inputs.nixpkgs.legacyPackages.aarch64-linux.alejandra;

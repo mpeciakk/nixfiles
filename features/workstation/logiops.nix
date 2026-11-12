@@ -12,7 +12,7 @@
 in {
   services.logiops = {
     enable = true;
-    # domyślne 500 ms: po boocie logid nie wykrywał myszy, dopóki sama nie wysłała raportu HID++
+    # with the default 500 ms logid missed the mouse after boot
     config.io_timeout = 2000.0;
     config.devices = [
       {

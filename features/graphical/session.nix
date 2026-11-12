@@ -31,7 +31,6 @@
     exec ${lib.getExe pkgs.soteria}
   '');
 
-  # gcr nadpisywał SSH_AUTH_SOCK w całej sesji, a klucz do podpisu commitów jest tylko w agencie 1Password (config/uwsm/env)
   services.gnome.gcr-ssh-agent.enable = false;
 
   xdg.portal = {

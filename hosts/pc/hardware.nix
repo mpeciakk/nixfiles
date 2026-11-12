@@ -13,7 +13,7 @@
 
   boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usbhid" "sd_mod"];
   boot.kernelModules = ["kvm-intel"];
-  # machine-id z UUID w DMI; laptop go nie ma i bierze stały id z /persist (rollback-root)
+  # stable machine-id from the DMI UUID (laptop lacks one, see rollback-root)
   boot.kernelParams = ["systemd.machine_id=firmware"];
   hardware.cpu.intel.updateMicrocode = true;
   hardware.enableRedistributableFirmware = true;
@@ -30,7 +30,6 @@
       options = ["nofail" "x-systemd.automount" "noatime" "compress=zstd:3"];
     };
   };
-  # dopisane do /nix z system/memory.nix: osobny btrfs, bitrot w backupie wyszedłby dopiero przy odtwarzaniu
   services.btrfs.autoScrub.fileSystems = ["/mnt/backup"];
 
   services.xserver.videoDrivers = ["nvidia"];

@@ -8,15 +8,14 @@
   hardware.asahi.enable = true;
   hardware.asahi.peripheralFirmwareDirectory = null;
 
-  # ESP Asahi ma ~500 MB
+  # Asahi ESP is only ~500 MB
   boot.loader.systemd-boot.configurationLimit = lib.mkForce 3;
-  # lutowany dysk bez LUKS: init=/bin/sh z menu boota to najtańsza droga złodzieja do danych
   boot.loader.systemd-boot.editor = false;
 
   boot.kernelParams = ["appledrm.show_notch=1"];
 
   fileSystems = {
-    # ESP z instalatora Asahi nie ma labelu; zostaje przy reinstalu
+    # Asahi installer's ESP has no label; its UUID survives reinstalls
     "/boot" = {
       device = "/dev/disk/by-uuid/2597-F992";
       fsType = "vfat";
