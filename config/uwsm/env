@@ -22,6 +22,9 @@ export SSH_AUTH_SOCK="$HOME"/.1password/agent.sock
 # which the distro's gpg-agent*.socket units (hardcoded %t/gnupg/S.*) no longer match. Inert
 # here: no secret keys, git signs with ssh — but a future gpg key needs those units fixed.
 export GNUPGHOME="$XDG_DATA_HOME"/gnupg
+# Claude Code's Ctrl-G and git open nvim. Mirrored in nushell/env.nu.
+export EDITOR=nvim
+export VISUAL=nvim
 
 # herdr-lazy reads its plugin list from here instead of herdr's plugin config dir, so the
 # declared plugin set and its lockfile live in this repo. Must be set session-wide: the
