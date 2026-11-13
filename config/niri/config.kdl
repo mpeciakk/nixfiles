@@ -7,8 +7,13 @@ include "bindings.kdl"
 include "animations.kdl"
 
 spawn-at-startup "wl-paste" "--watch" "cliphist" "store"
+spawn-at-startup "uwsm" "finalize"
 
 prefer-no-csd
+
+hotkey-overlay {
+    skip-at-startup
+}
 
 cursor {
     xcursor-theme "catppuccin-mocha-dark-cursors"
