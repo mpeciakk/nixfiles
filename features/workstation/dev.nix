@@ -3,6 +3,12 @@
   dotfiles,
   ...
 }: {
+  # direnv + nix-direnv: a project's devShell loads on cd (.envrc with `use flake`).
+  # The direnv module hooks nushell via programs.nushell.interactiveShellInit,
+  # which is only installed (as a vendor autoload script) when programs.nushell is enabled.
+  programs.direnv.enable = true;
+  programs.nushell.enable = true;
+
   hjem.users.m = {
     packages = with pkgs; [
       claude-code
