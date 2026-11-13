@@ -9,9 +9,9 @@ binds {
     Mod+Shift+V repeat=false { spawn "qs" "ipc" "call" "island" "launcherMenu" "clipboard"; }
     Mod+L repeat=false { spawn "qs" "ipc" "call" "island" "lock"; }
 
-    // Wyspa binds not taken yet (W9), each one needs its conflict settled first:
-    // Mod+A → island toggle control
-    // Mod+N → island toggle center
+    // Wyspa binds not taken yet (W9):
+    // Mod+A → island toggle control (conflicts: keyd meta+a = C-a)
+    // Mod+N → island toggle center (conflicts: keyd meta+n = C-n)
     // Mod+M → island toggle media
     // Mod+Shift+E → island toggle power (conflicts: screenshot)
     // Mod+Shift+H → island hide
@@ -29,7 +29,7 @@ binds {
     Mod+Shift+Up    { move-window-up; }
     Mod+Shift+Right { move-column-right; }
 
-    // Kciuk myszy + ruch w górę / w dół (logid.cfg).
+    // Kciuk myszy + ruch w górę / w dół (features/workstation/logiops.nix).
     Mod+Page_Up   { focus-workspace-up; }
     Mod+Page_Down { focus-workspace-down; }
 

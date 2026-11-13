@@ -1,7 +1,7 @@
 let
   root = "/home/m/projects/nixfiles";
 
-  # live repo path so edits skip a rebuild; a missing file fails eval, not hjem activation
+  # live repo path so edits skip a rebuild; a missing file fails eval, but a deleted one leaves a dangling link that fails hjem deactivation
   source = rel:
     if builtins.pathExists (../. + "/${rel}")
     then "${root}/${rel}"

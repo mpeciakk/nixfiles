@@ -1,21 +1,19 @@
 #!/usr/bin/env python3
 """Status line: where you are, what you are talking to, and what the run is doing.
 
-Written in python3 on purpose. The previous status line ran claude-hud through
-bun; bun disappeared from this machine and the status line died silently — no
-error, just an empty bar. python3 is the one dependency the hooks already
-require, so this has nothing left to lose.
+Written in python3 because the hooks already require it: a status line on a
+runtime that goes missing renders an empty bar, with no error.
 
 Renders one line normally, two while a pipeline run is open:
 
-    ~/dotfiles  main*   Opus 5 · xhigh   ctx 412K   5h 40% →16:20  7d 12%   +156/-23
+    ~/projects/nixfiles  main*   Opus 5 · xhigh   ctx 412K   5h 40% →16:20  7d 12%   +156/-23
     flow  json-export · implement · 2/4 tasks · feat/json-export
 
 Input schema is the documented statusLine payload (model, workspace, cost,
 context_window, effort, rate_limits). Every field is optional here: a missing one drops its
 segment instead of breaking the bar. Claude Code debounces renders at 300ms and
 cancels a render still running when the next one arrives, so this stays cheap —
-one git call for branch and dirt, one for the run state.
+one git call for branch and dirt, one for the run state (two in a linked worktree).
 """
 
 import json
@@ -198,5 +196,4 @@ if __name__ == "__main__":
     try:
         main()
     except Exception:
-        # A status line that raises is a status line you stop trusting.
         print("")

@@ -27,7 +27,6 @@ on documentation. Instead the run's location travels with every subagent
 misplaced commit surfaces at review.
 
 Fails open by design — malformed state, an unreadable file, any exception: allow.
-A guard must never break a session it cannot judge.
 """
 
 import json

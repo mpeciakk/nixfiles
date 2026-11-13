@@ -13,7 +13,7 @@ show_agent_labels_on_pane_borders = true
 status_indicators = "symbols"
 prompt_new_tab_name = false
 
-# Prefix to Caps Lock: keyd (config/keyd/default.conf) emits ctrl+alt+space for it.
+# Prefix to Caps Lock: keyd (features/workstation/keyd.nix) emits ctrl+alt+space for it.
 # Caps, release, then one key. ctrl+b stays free for Claude Code (background task).
 [keys]
 prefix = "ctrl+alt+space"

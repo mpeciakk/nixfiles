@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Pipeline run state — one file per repository, read by skills and hooks.
 
-Conversation memory does not survive compaction, and a worktree path you merely
-remember is a worktree you will lose. The hooks read this file, which is what
-makes the pipeline's gates mechanical rather than aspirational.
+Conversation memory does not survive compaction, so the run's paths live here
+and the hooks enforce the pipeline's gates from this file.
 
 Location: `<main-worktree>/.flow/run/state.json`, resolved from `git worktree
 list` so the main checkout and every linked worktree — including one created
@@ -27,8 +26,7 @@ Stages: triage design plan isolate implement inline finish
 
 Three orderings are enforced, because a stage that accepts any predecessor
 tracks nothing: `implement` needs a recorded `plan` and `worktree`, and
-`finish` needs a `worktree` or an `inline` run. Ordering rules are the cheap
-lever against skipped steps; prose is not.
+`finish` needs a `worktree` or an `inline` run.
 """
 
 import fcntl
@@ -41,10 +39,8 @@ import sys
 FIELDS = ("task", "stage", "spec", "plan", "worktree", "branch", "base")
 STAGES = ("triage", "design", "plan", "isolate", "implement", "inline", "finish")
 LIVE_KEYS = ("worktree", "plan", "spec", "tasks")
-# A free-form status is a silent-failure machine: the status line and
-# flow-context both pattern-match on it, so a status nobody recognises reads as
-# "no progress" instead of failing loudly. `complete` is the word the skills
-# documented before `done` won in practice; it is kept as an alias.
+# The status line and flow-context match on these, so an unknown status would
+# read as "no progress"; `complete` is the older skill wording, kept as an alias.
 TASK_STATUSES = ("started", "done", "blocked")
 TASK_ALIASES = {"complete": "done"}
 

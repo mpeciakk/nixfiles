@@ -25,6 +25,7 @@ not a run (✋ = you decide):
 Run state lives in `flow-state`, so "kontynuuj" in a fresh session resumes at
 the first task not done. `.flow/` commits `plans/`, `specs/`, `design/`,
 `probes/` and `reviews/`; `run/` (run state, review packages) is ignored.
+In nixfiles itself `.flow/` is gitignored (public repo), so plans stay local.
 
 **Always-on discipline:** `systematic-debugging`,
 `requesting-code-review` §3 (acting on findings). `CLAUDE.md` → "Rules" holds
@@ -39,8 +40,8 @@ agent.
 
 ## Model & effort
 
-Roles carry their model in `agents/`: branch-reviewer **Opus 5.5 · high**,
-plan-red-team **Opus 5.5 · high**, kt-cold-reader **Sonnet 5.5 · medium**. The
+Roles carry their model alias in `agents/`: branch-reviewer `opus` · high,
+plan-red-team `opus` · high, kt-cold-reader `sonnet` · medium. The
 session runs on the model you start it with and implements the tasks itself.
 
 Why it looks like this (in the private archive `mpeciakk/dotfiles`, where this

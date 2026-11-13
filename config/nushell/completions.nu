@@ -1,8 +1,7 @@
-# carapace-backed external completer, wired into nushell's completion engine.
-# This overrides the default completer that carapace's own init installs, adding
-# alias-aware completion (so `g`, `gs`, `ga` complete as their expanded command)
-# and a docker carve-out. Sourced after init.nu (which loads carapace.nu), so
-# this assignment wins.
+# Replaces the completer that carapace's own init installs: expands the whole
+# alias (`ga` -> `git add .`), not only its first word, and skips carapace for
+# docker. Sourced after init.nu (which sources carapace/init.nu), so this
+# assignment wins.
 let carapace_completer = {|spans: list<string>|
     CARAPACE_LENIENT=1 carapace $spans.0 nushell ...$spans | from json
 }

@@ -6,7 +6,7 @@
 # przekonfigurowuje (mutagen 0.18 nie umie zmienić parametrów żywej sesji —
 # zmiana konfiguracji to terminate + create, robione świadomie i ręcznie).
 #
-# Uruchamiaj na każdej maszynie po reinstalu albo gdy demon zgubi sesje.
+# Uruchamiaj na każdej maszynie po reinstalu albo gdy daemon zgubi sesje.
 #
 #   mutagen-sessions          # utwórz brakujące
 #   mutagen-sessions -n       # pokaż, co by zrobił, bez tworzenia
@@ -38,7 +38,7 @@ ign_args=("${IGNORES[@]/#/--ignore=}")
 # HEAD, config i obiekty muszą się propagować (żeby obie maszyny dzieliły
 # jedno repo), index i reflogi nie muszą i to one kolidują za każdym razem,
 # gdy git chodzi po obu stronach naraz. Sprawdzone w izolowanym teście
-# 2026-09-28 (patrz Środowisko i synchronizacja → „Ignory bookkeepingu gita").
+# 2026-09-28 (patrz Środowisko i synchronizacja → „Ignory bookkeepingu gita”).
 GIT_IGNORES=(
   '**/.git/index' '**/.git/index.lock'
   '**/.git/*.lock' '**/.git/**/*.lock'
