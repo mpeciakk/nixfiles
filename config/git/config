@@ -10,3 +10,6 @@
 	gpgsign = true
 [init]
 	defaultBranch = main
+[hook "stale-index"]
+	event = pre-commit
+	command = ~/projects/nixfiles/bin/git-stale-index

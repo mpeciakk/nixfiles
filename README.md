@@ -13,7 +13,7 @@ NixOS flake and dotfiles for two machines. `$HOME` is managed by [hjem](https://
 - **Desktop**: [niri](https://github.com/barrulus/biri) (biri fork) under uwsm, greetd + tuigreet, Quickshell shell from a separate repo (`~/projects/quickshell-dynamic-island`).
 - **Shell**: nushell with atuin, zoxide and carapace; sudo-rs instead of sudo.
 - **Live dotfiles**: `config/` and `bin/` are symlinked to the repo checkout, not the store, so edits apply without a rebuild.
-- **Two-machine sync**: Mutagen daemon; `mutagen-sessions` creates the sync sessions.
+- **Two-machine sync**: Mutagen daemon; `mutagen-sessions` creates the sync sessions. `.git/index` stays per machine, so a global pre-commit hook (`bin/git-stale-index`) refuses to commit from an index older than a HEAD moved by the other machine.
 
 ## Layout
 
@@ -47,3 +47,9 @@ Not created by the config:
 
 - btrfs labelled `nixos` with subvolumes `@root`, `@root-blank`, `@nix`, `@home`, `@persist`, `@nixos-state`
 - password hash for `m` in `/persist/secrets/m.passwd` (users are immutable, root is locked)
+- `laptop` only: `/persist/etc/machine-id` (`pc` derives it from the DMI UUID). Without it `rollback-root` skips the restore and the laptop gets a new machine-id on every boot. After the first boot:
+
+  ```sh
+  sudo install -d -m 0755 /persist/etc
+  sudo install -m 0444 /etc/machine-id /persist/etc/machine-id
+  ```

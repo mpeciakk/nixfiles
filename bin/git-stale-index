@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+#
+# git-stale-index — globalny hook pre-commit (hook.stale-index w config/git/config).
+#
+# Mutagen przenosi refy i obiekty, ale nie .git/index ani .git/logs/ (GIT_IGNORES
+# w mutagen-sessions). Po commicie na drugiej maszynie tutejszy index zostaje
+# stary i commit z niego cofa tamten commit. Lokalny reflog HEAD zapisuje tylko
+# ruchy z tej maszyny, więc ruch z drugiej zostawia w nim przerwę: stary HEAD
+# wpisu różny od nowego HEAD poprzedniego, albo obecny HEAD różny od ostatniego.
+# Index z HEAD odbudowuje `git reset`, więc przerwa po ostatnim resecie = stary index.
+#
+# shortcut: `git reset --soft` i `git stash pop --index` po syncu zostawiają stary
+# index i przechodzą; uszczelnić, jeśli taki revert zdarzy się naprawdę.
+
+set -euo pipefail
+
+[ "$(git rev-parse --show-ref-format)" = files ] || exit 0 # reftable: reflog jedzie syncem
+head=$(git rev-parse -q --verify HEAD) || exit 0          # pierwszy commit: nie ma czego cofnąć
+log=$(git rev-parse --git-path logs/HEAD)
+
+if [ -s "$log" ] && awk -v head="$head" '
+  { split($0, a, "\t"); split(a[1], f, " ")
+    if (a[2] ~ /^reset: moving to /) stale = 0
+    else if (NR > 1 && f[1] != prev && f[1] !~ /^0+$/) stale = 1 # same zera: initial/orphan
+    prev = f[2] }
+  END { exit !(prev == head && !stale) }' "$log"; then
+  exit 0
+fi
+
+cat >&2 <<EOF
+git-stale-index: HEAD ($(git rev-parse --short HEAD)) zmienił się poza tą maszyną (zwykle commit na drugiej) albo reflog HEAD jest pusty.
+Index może być sprzed tej zmiany, a commit z niego by ją cofnął.
+Odbuduj index (pliki zostają): git reset -q, potem znów git add i commit.
+EOF
+exit 1
