@@ -1,8 +1,9 @@
 {
   environment.etc."chromium/policies/managed/helium.json".text = builtins.toJSON {
+    # Helium omits prodversion, so the Web Store answers noupdate (imputnet/helium#1737)
     ExtensionInstallForcelist = [
-      "aeblfdkhhhdcdjpifhhbdiojplfjncoa;https://clients2.google.com/service/update2/crx"
-      "omkfmpieigblcllmkgbflkikinpkodlk;https://clients2.google.com/service/update2/crx"
+      "aeblfdkhhhdcdjpifhhbdiojplfjncoa;https://clients2.google.com/service/update2/crx?prodversion=157.0"
+      "omkfmpieigblcllmkgbflkikinpkodlk;https://clients2.google.com/service/update2/crx?prodversion=157.0"
     ];
     DefaultSearchProviderEnabled = true;
     DefaultSearchProviderName = "Google";
