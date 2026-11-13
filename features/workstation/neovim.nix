@@ -9,6 +9,7 @@
     with p; [
       bash
       c
+      c3
       cpp
       css
       diff

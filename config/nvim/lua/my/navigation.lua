@@ -32,7 +32,8 @@ require("oil").setup({
   view_options = { show_hidden = true },
 })
 map("n", "-", "<cmd>Oil<cr>", { desc = "Files: current file's directory" })
-map("n", "<leader>e", function()
+map("n", "<leader>e", "<cmd>Oil<cr>", { desc = "Files: current file's directory" })
+map("n", "<leader>E", function()
   require("oil").open(vim.fn.getcwd())
 end, { desc = "Files: cwd" })
 

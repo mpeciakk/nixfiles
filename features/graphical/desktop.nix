@@ -8,6 +8,7 @@
     packages = with pkgs; [
       kitty
       quickshell
+      glib # gdbus: Wyspa's sleep monitor (no gdbus = the session sleeps unlocked, DESIGN W21)
       xwayland-satellite
       cliphist
       wl-clipboard

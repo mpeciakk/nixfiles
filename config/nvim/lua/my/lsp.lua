@@ -1,5 +1,6 @@
 -- configs come from nvim-lspconfig's lsp/ dir, overrides from after/lsp/
-vim.lsp.enable({ "lua_ls", "nixd", "clangd", "tsc", "biome", "cssls", "tinymist" })
+-- c3_lsp: binary `c3lsp` comes from the project's devShell (direnv), e.g. ~/projects/os
+vim.lsp.enable({ "lua_ls", "nixd", "clangd", "tsc", "biome", "cssls", "tinymist", "c3_lsp" })
 
 vim.lsp.inlay_hint.enable(true)
 
