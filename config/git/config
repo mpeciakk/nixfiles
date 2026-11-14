@@ -1,5 +1,5 @@
 [user]
-	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFuAnxb9ukfxvQFf4JDL1e1XNzlKG9XWFbJXq0wVhOpr
+	signingkey = key::ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFuAnxb9ukfxvQFf4JDL1e1XNzlKG9XWFbJXq0wVhOpr
 	name = mpeciakk
 	email = mpeciakk@gmail.com
 [gpg]
@@ -13,3 +13,6 @@
 [hook "stale-index"]
 	event = pre-commit
 	command = ~/projects/nixfiles/bin/git-stale-index
+[gc]
+	# reflog i index drugiej maszyny (Mutagen) trzymają obiekty, których gc tutaj nie widzi
+	pruneExpire = never

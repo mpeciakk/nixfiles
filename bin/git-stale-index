@@ -2,7 +2,7 @@
 #
 # git-stale-index — globalny hook pre-commit (hook.stale-index w config/git/config).
 #
-# Mutagen przenosi refy i obiekty, ale nie .git/index ani .git/logs/ (GIT_IGNORES
+# Mutagen przenosi refy i obiekty, ale nie .git/index ani .git/logs/HEAD (GIT_IGNORES
 # w mutagen-sessions). Po commicie na drugiej maszynie tutejszy index zostaje
 # stary i commit z niego cofa tamten commit. Lokalny reflog HEAD zapisuje tylko
 # ruchy z tej maszyny, więc ruch z drugiej zostawia w nim przerwę: stary HEAD

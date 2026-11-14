@@ -15,7 +15,11 @@ set -euo pipefail
 
 HUB="siriussync:/home/syncer/sync"
 DRY=""
-[ "${1:-}" = "-n" ] && DRY=1
+case "${1:-}" in
+  -n) DRY=1 ;;
+  '') ;;
+  *) echo "użycie: mutagen-sessions [-n]" >&2; exit 2 ;;
+esac
 
 # Wspólne ignory dla obu sesji proj-*: artefakty buildów i środowisk.
 # Trzymane w jednym miejscu, żeby obie maszyny miały identyczną listę —
@@ -24,12 +28,14 @@ IGNORES=(
   .idea/ .DS_Store '*.swp' '*.swo' '*~' '*.log' '*.tmp'
   .direnv/ .terraform/
   node_modules/ .next/ .nuxt/ .svelte-kit/ .astro/ .docusaurus/ .turbo/ .vite/ .parcel-cache/
-  coverage/ .yarn/cache/
+  coverage/ '**/.yarn/cache/'
   .venv/ venv/ __pycache__/ '*.pyc' .pytest_cache/ .mypy_cache/ .ruff_cache/
   .tox/ '*.egg-info/' .ipynb_checkpoints/
   .gradle/ .kotlin/ '*.class'
   'cmake-build-*/' CMakeFiles/ CMakeCache.txt '*.o' '*.obj' '*.a' '*.so' '*.dylib'
   build/ dist/ out/ target/
+  # link `result` z nix build jest absolutny i Mutagen (Portable) zgłasza go jako problem
+  '*/result' '*/result-*'
 )
 
 ign_args=("${IGNORES[@]/#/--ignore=}")
@@ -39,10 +45,14 @@ ign_args=("${IGNORES[@]/#/--ignore=}")
 # jedno repo), index i reflogi nie muszą i to one kolidują za każdym razem,
 # gdy git chodzi po obu stronach naraz. Sprawdzone w izolowanym teście
 # 2026-09-28 (patrz Środowisko i synchronizacja → „Ignory bookkeepingu gita”).
+# Wyjątek: reflog refs/stash (lista stashy) jedzie razem z refs/stash, inaczej
+# `git stash pop` zdejmuje stash drugiej maszyny. Linkowane worktree mają index
+# i reflogi pod .git/worktrees/<n>/.
 GIT_IGNORES=(
   '**/.git/index' '**/.git/index.lock'
   '**/.git/*.lock' '**/.git/**/*.lock'
-  '**/.git/logs/'
+  '**/.git/logs/HEAD' '**/.git/logs/refs/heads/' '**/.git/logs/refs/remotes/'
+  '**/.git/worktrees/*/index' '**/.git/worktrees/*/logs/'
   '**/.git/ORIG_HEAD' '**/.git/MERGE_HEAD' '**/.git/MERGE_MSG' '**/.git/MERGE_MODE'
   '**/.git/COMMIT_EDITMSG' '**/.git/FETCH_HEAD'
 )
@@ -63,7 +73,7 @@ ensure() {
     echo "+  $name — utworzyłbym: $local_path -> $HUB/$remote $*"
     return
   fi
-  mutagen sync create --name="$name" "$@" "$local_path" "$HUB/$remote" >/dev/null
+  mutagen sync create --name="$name" "$@" "$local_path" "$HUB/$remote"
   echo "+  $name — utworzone"
 }
 
