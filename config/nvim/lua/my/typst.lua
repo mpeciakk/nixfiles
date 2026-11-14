@@ -22,6 +22,10 @@ local function toggle_pdf_pane()
     vim.notify("PDF pane needs herdr; :TypstPreview opens the browser preview", vim.log.levels.WARN)
     return
   end
+  if vim.api.nvim_buf_get_name(0) == "" then
+    vim.notify("PDF pane: save the file first", vim.log.levels.WARN)
+    return
+  end
   local pdf = vim.fn.expand("%:p:r") .. ".pdf"
   if panes[pdf] and herdr({ "pane", "get", panes[pdf] }) then
     herdr({ "pane", "close", panes[pdf] })
@@ -41,6 +45,16 @@ local function toggle_pdf_pane()
   end
   if not vim.uv.fs_stat(pdf) then
     vim.cmd.write()
+    -- the on-save export goes to the main document when another one was opened first
+    local client = vim.lsp.get_clients({ bufnr = 0, name = "tinymist" })[1]
+    if client then
+      client:request_sync(
+        "workspace/executeCommand",
+        { command = "tinymist.exportPdf", arguments = { vim.api.nvim_buf_get_name(0) } },
+        5000,
+        0
+      )
+    end
     if not vim.wait(5000, function()
       return vim.uv.fs_stat(pdf) ~= nil
     end, 100) then

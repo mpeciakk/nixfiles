@@ -4,7 +4,8 @@ local specs = {
   "https://github.com/stevearc/conform.nvim",
   "https://github.com/nvim-mini/mini.nvim",
   "https://github.com/rafamadriz/friendly-snippets",
-  "https://github.com/folke/tokyonight.nvim",
+  -- the repo's basename is "nvim"
+  { src = "https://github.com/catppuccin/nvim", name = "catppuccin" },
   "https://github.com/folke/which-key.nvim",
   "https://github.com/ibhagwan/fzf-lua",
   "https://github.com/stevearc/oil.nvim",
@@ -19,8 +20,8 @@ local specs = {
 -- lockfile names; a dir the lockfile still names would be cloned back on every start.
 -- Removing a plugin: drop its line, restart, then vim.pack.del({ name }) so the lockfile forgets it.
 local wanted = {}
-for _, src in ipairs(specs) do
-  wanted[src:match("[^/]+$")] = true
+for _, spec in ipairs(specs) do
+  wanted[type(spec) == "table" and spec.name or spec:match("[^/]+$")] = true
 end
 local ok, locked = pcall(function()
   local lockfile = vim.fs.joinpath(vim.fn.stdpath("config"), "nvim-pack-lock.json")

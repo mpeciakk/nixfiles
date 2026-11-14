@@ -5,7 +5,8 @@ return {
   settings = {
     nixd = {
       nixpkgs = { expr = "import " .. flake .. ".inputs.nixpkgs { }" },
-      options = { nixos = { expr = flake .. ".nixosConfigurations.pc.options" } },
+      -- laptop's options are pc's plus nixos-apple-silicon; a pc-only options module would need its own entry
+      options = { nixos = { expr = flake .. ".nixosConfigurations.laptop.options" } },
     },
   },
 }
