@@ -1,8 +1,4 @@
-auto_sync = true
 enter_accept = true
-
-[sync]
-records = true
 
 [logs]
 dir = "~/.local/state/atuin/logs"

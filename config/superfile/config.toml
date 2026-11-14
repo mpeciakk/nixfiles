@@ -3,7 +3,6 @@
 ignore_missing_fields = true
 
 editor = "nvim"
-cd_on_quit = true
 code_previewer = "bat"
 enable_file_preview_border = true
 zoxide_support = true
