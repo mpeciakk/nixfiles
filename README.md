@@ -11,7 +11,7 @@ NixOS flake and dotfiles for two machines. `$HOME` is managed by [hjem](https://
 
 - **Ephemeral root**: an initrd service resets btrfs `@root` from `@root-blank` on every boot and keeps old roots in `@root-old`; each boot prunes those at least 15 days old. Only `@nix`, `@home`, `@persist` and `@nixos-state` survive; system state goes to `/persist` through `persist.directories` bind mounts.
 - **Desktop**: [niri](https://github.com/barrulus/biri) (biri fork) under uwsm, greetd + tuigreet, Quickshell shell from a separate repo (`~/projects/quickshell-dynamic-island`).
-- **Shell**: nushell with atuin, zoxide and carapace; sudo-rs instead of sudo.
+- **Shell**: nushell with atuin, zoxide and carapace; sudo-rs instead of sudo. `m` is in the `docker` group, which is root without a password: any process running as `m` can `docker run -v /:/h` and bypass sudo-rs.
 - **Live dotfiles**: `config/` and `bin/` are symlinked to the repo checkout, not the store, so edits apply without a rebuild.
 - **Two-machine sync**: Mutagen daemon; `mutagen-sessions` creates the sync sessions. `.git/index` stays per machine, so a global pre-commit hook (`bin/git-stale-index`) refuses to commit from an index older than a HEAD moved by the other machine.
 
@@ -51,9 +51,10 @@ find ~/.config ~/.local/bin ~/.claude -xtype l -lname '/home/m/projects/nixfiles
 
 Not created by the config:
 
-- btrfs labelled `nixos` with subvolumes `@root`, `@root-blank`, `@nix`, `@home`, `@persist`, `@nixos-state`
+- btrfs labelled `nixos` with subvolumes `@root`, `@root-blank`, `@nix`, `@home`, `@persist`, `@nixos-state`. It is not encrypted: on `laptop`, `boot.loader.systemd-boot.editor = false` without LUKS does not protect the data, since U-Boot can still boot a USB stick that mounts the disk.
 - `pc` only: the ESP labelled `BOOT` (`laptop` mounts the Asahi ESP by UUID)
 - password hash for `m` in `/persist/secrets/m.passwd` (users are immutable, root is locked)
+- `~/projects/quickshell-dynamic-island` and `~/work/claude/knowledge-transfer` (synced by Mutagen or cloned by hand) before the first switch: hjem links them by absolute path and `hjem-activate@m` fails while they are missing
 - `laptop` only: `/persist/etc/machine-id` (`pc` derives it from the DMI UUID). Without it `rollback-root` skips the restore and the laptop gets a new machine-id on every boot. After the first boot:
 
   ```sh
