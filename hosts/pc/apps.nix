@@ -13,5 +13,6 @@
       ];
     })
     pkgs.pwvucontrol
+    pkgs.obsidian
   ];
 }
