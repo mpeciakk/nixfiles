@@ -42,18 +42,37 @@ map("n", "<leader>tw", gitsigns.toggle_word_diff, { desc = "Toggle word diff" })
 local review
 local opening -- base of the review being opened; false = gitsigns default (index)
 
+local function git(args)
+  local res = vim.system(vim.list_extend({ "git" }, args), { text = true }):wait()
+  return res.code == 0 and vim.trim(res.stdout) or nil
+end
+
+-- only buffers of cwd's repo: in a buffer from another repo the rev is missing and gitsigns errors out.
+-- shortcut: buffers opened during a review count from the index, fine while reviews are short.
+local function set_base(base)
+  local root = git({ "rev-parse", "--show-toplevel" })
+  for _, b in ipairs(vim.api.nvim_list_bufs()) do
+    local s = vim.b[b].gitsigns_status_dict
+    if s and s.root == root then
+      vim.api.nvim_buf_call(b, function()
+        gitsigns.change_base(base)
+      end)
+    end
+  end
+end
+
 require("diffview").setup({
   hooks = {
     view_opened = function(view)
       if opening ~= nil then
         review = view
-        gitsigns.change_base(opening or nil, true)
+        set_base(opening or nil)
       end
     end,
     view_closed = function(view)
       if view == review then
         review = nil
-        gitsigns.reset_base(true)
+        set_base(nil)
       end
     end,
   },
@@ -74,12 +93,8 @@ local function open_review(rev, base)
   end
 end
 
-local function git(args)
-  local res = vim.system(vim.list_extend({ "git" }, args), { text = true }):wait()
-  return res.code == 0 and vim.trim(res.stdout) or nil
-end
-
--- origin/HEAD, else init.defaultBranch, else main or master; always the local branch
+-- origin/HEAD, else init.defaultBranch, else main or master as a local branch; else origin/HEAD's
+-- remote branch (a clone made with -b has no local default branch)
 local function default_branch()
   local origin = git({ "symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD" })
   local candidates = {
@@ -93,6 +108,7 @@ local function default_branch()
       return name
     end
   end
+  return origin
 end
 
 local function review_branch()
