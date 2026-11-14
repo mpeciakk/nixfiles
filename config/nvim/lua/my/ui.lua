@@ -1,6 +1,6 @@
 -- kitty draws the background (background_opacity 0.8)
-require("tokyonight").setup({ style = "storm", transparent = true })
-vim.cmd.colorscheme("tokyonight")
+require("catppuccin").setup({ flavour = "mocha", transparent_background = true })
+vim.cmd.colorscheme("catppuccin")
 
 require("mini.icons").setup()
 -- oil, diffview and others look for nvim-web-devicons
