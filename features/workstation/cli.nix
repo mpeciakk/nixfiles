@@ -8,7 +8,7 @@
       ripgrep
       bat
       git
-      python3
+      (python3.withPackages (ps: [ps.pyyaml])) # pyyaml: lint vaulta sprawdza składnię frontmattera
       jq
       herdr
       lazygit
