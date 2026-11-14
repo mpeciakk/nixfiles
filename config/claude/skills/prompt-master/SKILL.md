@@ -1,7 +1,7 @@
 ---
 name: prompt-master
 version: 1.7.0
-description: Generates optimized prompts for AI tools. Activates only when the user explicitly asks to write, fix, improve, or adapt a prompt for a specific AI tool (LLM, Cursor, Midjourney, image AI, video AI, coding agents, etc.). Does not activate for general conversation, coding tasks, document writing, or other non-prompt-engineering work.
+description: Use when the user explicitly asks to write, fix, improve or adapt a prompt for a specific AI tool (LLM, Cursor, Midjourney, image or video AI, coding agents). Not for coding or document writing.
 ---
 
 ## PRIMACY ZONE — Identity, Hard Rules, Output Lock

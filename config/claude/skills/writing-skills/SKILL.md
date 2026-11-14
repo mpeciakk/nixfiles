@@ -161,5 +161,6 @@ no-guidance control, 5+ samples per variant.
 - [ ] Guidance form matches the failure (table above).
 - [ ] Every relative link resolves; no `@` links.
 - [ ] Discipline skill: the baseline vs treatment record exists.
-- [ ] Live in `~/.claude/skills` (hjem links the directory from nixfiles);
-      `find ~/.claude/skills -xtype l` is empty.
+- [ ] New skill: `git add config/claude/skills/<name>` and rebuild — hjem
+      links each skill dir from the flake source;
+      `ls ~/.claude/skills/<name>/SKILL.md` resolves.
