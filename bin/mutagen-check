@@ -30,30 +30,19 @@ WAIT=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -f|--flush) FLUSH=1; shift ;;
-    -w|--wait)  WAIT="${2:?-w wymaga liczby sekund}"; shift 2
+    -w|--wait)  [[ $# -ge 2 ]] || { echo "-w wymaga liczby sekund" >&2; exit 2; }; WAIT=$2; shift 2
                 [[ "$WAIT" =~ ^[0-9]+$ ]] || { echo "-w wymaga liczby sekund, dostał: $WAIT" >&2; exit 2; } ;;
     -h|--help)  sed -n '3,/^$/s/^# \{0,1\}//p' "$0"; exit 0 ;;
     *) echo "Nieznany argument: $1" >&2; exit 2 ;;
   esac
 done
 
-# Źródło danych: prawdziwy mutagen, albo fixture (do testów).
-run_list() {
-  if [[ -n "${MUTAGEN_CHECK_FIXTURE:-}" ]]; then
-    cat "$MUTAGEN_CHECK_FIXTURE"
-  else
-    mutagen sync list --long
-  fi
-}
-
-if [[ -z "${MUTAGEN_CHECK_FIXTURE:-}" ]]; then
-  command -v mutagen >/dev/null 2>&1 || { echo "${R}mutagen nie jest zainstalowany${N}" >&2; exit 2; }
-fi
+command -v mutagen >/dev/null 2>&1 || { echo "${R}mutagen nie jest zainstalowany${N}" >&2; exit 2; }
 
 # Parsuje output --long. Ustawia globalne OK, REPORT, COUNT.
 check_once() {
   local raw
-  raw="$(run_list 2>/dev/null || true)"
+  raw="$(mutagen sync list --long 2>/dev/null || true)"
 
   OK=1
   REPORT=""
@@ -95,14 +84,8 @@ check_once() {
       Identifier:*)  have=1; [[ -z "$name" ]] && name="${t#Identifier: }" ;;
       Status:*)      status="${t#Status: }"; have=1 ;;
       "Connected: No") disc=1 ;;
-      Conflicts:*)
-        # "Conflicts: none" = ok; "Conflicts:" (lista poniżej) lub cokolwiek innego = konflikt
-        [[ "$t" != "Conflicts: none" ]] && conflicts=1
-        ;;
-      "Scan problems:"*|"Transition problems:"*)
-        local rest="${t#*problems:}"; rest="${rest# }"
-        [[ -z "$rest" || ( "$rest" != "none" && "$rest" != "0" ) ]] && problems=1
-        ;;
+      Conflicts:*) conflicts=1 ;;  # 0.18 drukuje nagłówek tylko przy ≥1 konflikcie
+      "Scan problems:"*|"Transition problems:"*) problems=1 ;;
     esac
   done <<< "$raw"
   _eval  # ostatni rekord (gdy brak zamykającego separatora)
@@ -114,7 +97,7 @@ check_once() {
   return 0
 }
 
-if [[ "$FLUSH" -eq 1 && -z "${MUTAGEN_CHECK_FIXTURE:-}" ]]; then
+if [[ "$FLUSH" -eq 1 ]]; then
   echo "Wymuszam flush wszystkich sesji..."
   mutagen sync flush --all || true
 fi
