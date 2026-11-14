@@ -36,8 +36,7 @@ the gist of, and review. None of them writes in this tree.
 4. **Verify:** the task's tests and the project suite, run, output shown.
 5. **Commit** on the branch, then record the range from `git log`:
    `flow-state task N done "<base7>..<head7>"`. After the run's first done,
-   if the repo has a remote, `git push -u origin <branch>`: a lost worktree
-   takes unpushed branch commits with it, and nothing can recover them.
+   if the repo has a remote, `git push -u origin <branch>`.
 6. **Context check.** A hook on `flow-state task … done` reports when the
    session is above 300k tokens. When it does, stop and ask the user for
    `/clear`, then "kontynuuj": the ledger resumes the run at the next task, and
