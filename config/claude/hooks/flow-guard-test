@@ -203,6 +203,9 @@ check "Agent without isolation" allow "$(agent_payload "$WT")"
 check "Agent with isolation=remote" deny "$(agent_payload "$WT" remote)"
 check "unrelated bash command" allow "$(bash_payload "$WT" 'npm test')"
 check "git commit (not enforced, by design)" allow "$(bash_payload "$REPO" 'git commit -m x')"
+OTHER=$ROOT/other; mkrepo "$OTHER" >/dev/null || fixture_fail "other repo"
+check "git -C <another repo> worktree add" allow "$(bash_payload "$WT" "git -C $OTHER worktree add $ROOT/other-wt HEAD")"
+check "git -C <external worktree of this repo> worktree add" deny "$(bash_payload "$WT" "git -C $EXT worktree add ../o")"
 
 echo "=== deny messages carry the run, not an off switch ==="
 r=$(deny_reason "$(edit_payload "$REPO" "$REPO/.flow/run/state.json" "" "" Write)")
@@ -411,6 +414,8 @@ check "the sanctioned fallback heartbeat is allowed" allow \
 check "stopping a loop is allowed" allow "$(wakeup_payload "$REPO" stop "")"
 check "external work the harness cannot report is allowed" allow \
   "$(wakeup_payload "$REPO" 300 "Waiting for the CI build on the deploy branch to finish")"
+check "a human PR reviewer is not a dispatch" allow \
+  "$(wakeup_payload "$REPO" 600 "Check whether the GitHub PR reviewer approved #42")"
 check "a hyphenated project name is not a dispatch" allow \
   "$(wakeup_payload "$REPO" 300 "Checking whether the agents-sdk install completed")"
 check "a wakeup with no delay is not judged" allow \
@@ -525,6 +530,12 @@ PLAN2=$SLR/.flow/plans/gone.md
 "$STATE" --cwd "$SLR" set plan="$PLAN2" >/dev/null
 line=$(sl_payload "$SLR" | "$SL" | tail -1)
 case "$line" in *5/6*) report ok "unreadable plan: falls back instead of crashing";; *) report no "missing plan breaks the counter" "$line";; esac
+"$STATE" --cwd "$SLR" set stage=inline >/dev/null || fixture_fail "counter stage=inline"
+line=$(sl_payload "$SLR" | "$SL" | tail -1)
+case "$line" in *"no workspace"*) report no "inline run without a worktree is flagged red" "$line";; *) report ok "inline run without a worktree: no workspace warning";; esac
+"$STATE" --cwd "$SLR" set stage=isolate >/dev/null || fixture_fail "counter stage=isolate"
+line=$(sl_payload "$SLR" | "$SL" | tail -1)
+case "$line" in *"no workspace"*) report ok "stage=isolate without a worktree is flagged";; *) report no "isolate without a worktree not flagged" "$line";; esac
 
 echo "=== status line model hint ==="
 sl_model() { # cwd model_id -> status line output
@@ -660,6 +671,12 @@ grep -q '^+changed' "$pkg" && report ok "commit range package after committing" 
 SIDE=$(git -C "$RP" commit-tree -p "$RB" -m side "$(git -C "$RP" rev-parse "$RB^{tree}")")
 (cd "$RP" && "$SCR/review-package" "$SIDE" HEAD >/dev/null 2>&1); rc=$?
 [ "$rc" -eq 3 ] && report ok "BASE off HEAD's history exits 3" || report no "ancestry guard" "rc=$rc"
+git init -q "$RP/nested" || fixture_fail "nested repo"
+[ -z "$(git -C "$RP" status --porcelain -uno)" ] || fixture_fail "rp tree not clean"
+H=$(git -C "$RP" rev-parse HEAD)
+(cd "$RP" && "$SCR/review-package" "$H" --worktree >/dev/null 2>&1); rc=$?
+[ "$rc" -eq 4 ] && report ok "--worktree: an untracked nested repo alone still exits 4" || report no "nested repo hides an empty package" "rc=$rc"
+rm -rf "$RP/nested"
 
 # ------------------------------------- review-package from a linked worktree
 RPW=$ROOT/rp-wt

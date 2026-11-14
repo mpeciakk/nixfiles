@@ -164,7 +164,7 @@ def flow_line(state):
         bits.append(f"{colour}{done}/{total}{RESET} tasks")
     if state.get("branch"):
         bits.append(state["branch"])
-    if not state.get("worktree"):
+    if not state.get("worktree") and stage in ("isolate", "implement"):
         bits.append(f"{RED}no workspace{RESET}")
     return f"{DIM}flow{RESET}  " + f"{DIM} · {RESET}".join(bits)
 
