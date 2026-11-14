@@ -162,8 +162,7 @@ of a code task.
 are dissolved. Each D row and each open point moves, with its number, to the
 topic file that holds the section it governs. A row that governs several
 topics goes with its primary section and is linked from the others. The
-reason: one `decisions.md` would put 72 KB in front of every design gate, the
-option D1 rejected.
+reason: one `decisions.md` would put 72 KB in front of every plan gate.
 
 **Numbering stays global:** a moved §7 stays §7, and D numbers continue one
 sequence. Whoever adds a D row or a section updates the index's next free D

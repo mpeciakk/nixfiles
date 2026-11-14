@@ -40,10 +40,11 @@ branch split from main — correct?"
 
 ## Step 4 — present the options, without commentary
 
-If the plan's copy on the branch (`<worktree>/.flow/plans/<plan basename>`,
-read before Step 5 leaves the worktree) has a `## Rulings` section, list its
-lines first, in the reply — decisions you made during the run that the user
-has not seen yet.
+Read the plan before Step 5 leaves the worktree: its worktree copy
+(`<worktree>/.flow/plans/<plan basename>`) if `.flow/plans` is tracked
+(`git check-ignore -q .flow/plans` fails), else the file `flow-state get plan`
+names. If it has a `## Rulings` section, list its lines first, in the reply —
+decisions you made during the run that the user has not seen yet.
 
 Then ask with the `AskUserQuestion` tool, not as a question typed in the chat.
 One single-select question in the user's language, the branch name in it,
@@ -89,18 +90,26 @@ git checkout <base-branch> && git pull   # skip the pull with no remote
 git merge <feature-branch>
 <test command>                     # only if the merge was not a fast-forward
 git push origin <base-branch>      # only if a remote exists
+git push origin --delete <feature-branch>   # only if it was pushed
 ```
 
 Then clean up the workspace (Step 6) — the branch is still checked out in the worktree until it is gone, so
 the order is merge, then remove the workspace, then deal with the branch.
 
 **2. Push and open a PR.** `git push -u origin <feature-branch>`, then open the
-PR. Keep the worktree: the user needs it to act on review feedback.
+PR. Keep the worktree: the user needs it to act on review feedback. The run
+stays open for review feedback — say so, and that `flow-state clear` ends it.
 
-**3. Keep as-is.** Report the branch and worktree path. Change nothing.
+**3. Keep as-is.** Report the branch and worktree path. Change nothing. Then
+`~/.claude/hooks/flow-state clear`: the branch and worktree stay, the run is
+over.
 
-**4. Discard.** List exactly what disappears — branch, commits, worktree path —
-and require the user to type `discard`. Then clean up the workspace (Step 6).
+**4. Discard.** List exactly what disappears — branch, commits, worktree path,
+the branch on origin, if pushed — and require the user to type `discard`. Then
+clean up the workspace (Step 6) and, if it was pushed,
+`git push origin --delete <feature-branch>`. The plan commit on <base-branch>
+(`git log --grep='^plan: '`) stays: it put this run's D rows into the spec.
+Name it and ask whether to `git revert` it.
 
 ## Step 6 — clean up the workspace
 

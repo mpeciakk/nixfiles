@@ -147,9 +147,13 @@ git add .flow/plans/<file>.md <red-team log, if red-team ran> <spec files> && gi
 The commit lands on the current branch before any worktree exists — the
 worktree branches from HEAD and needs it. Say so.
 
+If `git check-ignore -q .flow/plans` succeeds, the project keeps `.flow/` out
+of git: commit only the spec change; the plan lives at the main-checkout path
+only.
+
 Present: the decisions, the tasks (one line each), the red-team objections
 and what you did with each, the commit. Wait for "go".
 
 On "go": using-git-worktrees, then executing-plans. If the user asks to work
-on main without a worktree instead, record `flow-state set stage=inline` and
-work the tasks the same way in the main checkout.
+on main without a worktree instead, using-git-worktrees records the main
+checkout in place (Step 0, work in place), then executing-plans.

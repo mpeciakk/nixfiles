@@ -60,12 +60,20 @@ archive).
 ## How this differs from obra/superpowers
 
 - **Inline by default** — a run is opened deliberately, not for every change.
-- **One plan document, one design gate**; tasks are domains with outcomes and
+- **One plan document, one plan gate**; tasks are domains with outcomes and
   acceptance criteria, not pre-written code.
 - **No per-task review** — one stronger branch review that runs the tests and
   the change's real verification and checks spec decisions.
 - **Grep-based caller check in the branch review**, **candor ruleset**,
   **red-team pre-mortem**.
+
+## Cross-session messages
+
+`crossSessionInbound: "accept"` in `settings.json` lets a session in auto or
+default mode message a session started with `--dangerously-skip-permissions`
+without your approval, so hostile text the first one reads can make the
+second act with no prompt; without the key, Claude Code holds such a message
+(`mode-mismatch`) for you to approve.
 
 ## Testing
 

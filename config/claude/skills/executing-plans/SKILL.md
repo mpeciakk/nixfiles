@@ -49,10 +49,11 @@ Then the next task, without checking in.
 
 - Reversible and inside the plan's scope (a name, an approach, an edge case
   the plan got wrong): rule on it yourself. Append `- Task N: <ruling> —
-  <why> — <cost if wrong>` to a `## Rulings` section at the end of the plan's
-  copy in the worktree (`<worktree>/.flow/plans/<plan basename>`, not the
-  main-checkout path `flow-state get plan` returns) and commit it with the
-  task. The user sees every ruling at finish.
+  <why> — <cost if wrong>` to a `## Rulings` section at the end of the plan:
+  its worktree copy (`<worktree>/.flow/plans/<plan basename>`) if
+  `.flow/plans` is tracked (`git check-ignore -q .flow/plans` fails), committed
+  with the task; else the file `flow-state get plan` names, uncommitted. The
+  user sees every ruling at finish.
 - It changes the scope or a spec decision, or is irreversible (data, external
   side effects, security): the user's call. Show the plan line and the
   evidence.
