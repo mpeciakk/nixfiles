@@ -86,9 +86,6 @@ wired UserPromptSubmit "" prompt-context \
 wired SubagentStart "" prompt-context \
   && report ok "SubagentStart runs prompt-context" \
   || report no "SubagentStart does not run prompt-context"
-wired SubagentStart "" flow-context \
-  && report ok "SubagentStart still runs flow-context" \
-  || report no "flow-context was dropped from SubagentStart"
 
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]

@@ -41,9 +41,9 @@ HERE = os.path.dirname(os.path.realpath(__file__))
 EDIT_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
 WORKSPACE_TOOLS = {"EnterWorktree", "Agent", "Bash"}
 STOOD_DOWN = {"inline", "finish"}
-# Roles this pipeline dispatches. Naming one in a short wakeup is polling for
+# Words that name dispatched work. Naming one in a short wakeup is polling for
 # work the harness reports by itself.
-DISPATCHED_ROLES = ("reviewer", "fixer", "red-team", "redteam",
+DISPATCHED_ROLES = ("branch-reviewer", "fixer", "red-team", "redteam",
                     "subagent", "docs-researcher", "branch review", "task review")
 COMPLETION_WORDS = ("finish", "done", "complete", "report", "verdict", "result",
                     "returned", "came back", "skończy", "zakończy", "gotow")
@@ -95,8 +95,9 @@ def check_run_state(root, task, target):
         )
 
 
-def creates_worktree(command):
-    """True for a real `git … worktree add`, not a mention of one.
+def worktree_add_dir(command):
+    """The directory a real `git … worktree add` runs in (its `-C` path, else
+    "."), or None for a mention of one.
 
     Tokenising respects quotes, so `echo "run git worktree add"` is one token
     and reads as prose, while `git worktree add x` reads as three. A command
@@ -108,23 +109,25 @@ def creates_worktree(command):
     except ValueError:
         tokens = command.split()
     if "--help" in tokens or "-h" in tokens:
-        return False  # reading the docs creates nothing
+        return None  # reading the docs creates nothing
     for i, token in enumerate(tokens[:-2]):
         if os.path.basename(token) != "git":
             continue
         rest = tokens[i + 1:]
-        j = 0
+        j, where = 0, "."
         while j < len(rest) - 1 and rest[j].startswith("-"):
+            if rest[j] == "-C":  # git chains repeated -C paths
+                where = os.path.join(where, os.path.expanduser(rest[j + 1]))
             j += 2 if rest[j] in ("-C", "-c") else 1
         if rest[j:j + 2] == ["worktree", "add"]:
-            return True
-    return False
+            return where
+    return None
 
 
 def polls_for_agent(text):
     """True when the wakeup is about work a dispatched subagent is doing."""
     low = text.lower()
-    if any(role in low for role in DISPATCHED_ROLES):
+    if any(role in low for role in DISPATCHED_ROLES) or re.search(r"\btask\s*\d+\s+review", low):
         return True
     # "agent" alone is too common (a project *about* agents); pair it with a
     # word about the work being over.
@@ -157,7 +160,7 @@ def check_wakeup(payload):
     )
 
 
-def check_workspace(payload, state, worktree, task):
+def check_workspace(payload, cwd, module, root, worktree, task):
     tool = payload.get("tool_name")
     tool_input = payload.get("tool_input") or {}
     if tool == "EnterWorktree":
@@ -171,8 +174,11 @@ def check_workspace(payload, state, worktree, task):
         command = tool_input.get("command")
         if not isinstance(command, str) or "worktree" not in command:
             allow()
-        if not creates_worktree(command):
+        where = worktree_add_dir(command)
+        if where is None:
             allow()
+        if module.repo_root(os.path.join(cwd, where)) != root:
+            allow()  # a worktree of another repository, not this run's
     deny(
         f"This run already has a workspace: {worktree}. A second one is how a run "
         "loses track of where its work went — an isolated agent's commits never "
@@ -222,7 +228,7 @@ def main():
             allow()
         check_run_state(root, task, target)
     elif tool in WORKSPACE_TOOLS:
-        check_workspace(payload, state, worktree, task)
+        check_workspace(payload, cwd, module, root, worktree, task)
     allow()
 
 
