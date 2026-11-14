@@ -3,6 +3,11 @@
   dotfiles,
   ...
 }: {
+  # pam_env: TTY logins, user units and the graphical session all find the same daemon
+  environment.sessionVariables.MUTAGEN_DATA_DIRECTORY = "$HOME/.local/share/mutagen";
+  # sync starts at boot, before uwsm reads the synced ~/.config/uwsm/env at login
+  users.users.m.linger = true;
+
   hjem.users.m = {
     packages = [pkgs.mutagen];
 
@@ -13,7 +18,6 @@
       wantedBy = ["default.target"];
       restartTriggers = [pkgs.mutagen];
       path = [pkgs.openssh];
-      environment.MUTAGEN_DATA_DIRECTORY = "%h/.local/share/mutagen";
       serviceConfig = {
         ExecStart = "${pkgs.mutagen}/bin/mutagen daemon run";
         Restart = "on-failure";

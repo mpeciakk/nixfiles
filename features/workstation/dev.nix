@@ -7,6 +7,8 @@
   # The direnv module hooks nushell via programs.nushell.interactiveShellInit,
   # which is only installed (as a vendor autoload script) when programs.nushell is enabled.
   programs.direnv.enable = true;
+  # the module sets it only in /etc/set-environment; pam_env reaches nushell TTY logins too
+  environment.sessionVariables.DIRENV_CONFIG = "/etc/direnv";
   programs.nushell.enable = true;
 
   hjem.users.m = {

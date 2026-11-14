@@ -1,4 +1,6 @@
-{
+{dotfiles, ...}: {
+  # rules name pc's PCI cards and keep its outputs awake; laptop audio should suspend
+  hjem.users.m.xdg.config.files.wireplumber.source = dotfiles.source "config/wireplumber";
   hjem.users.m.xdg.config.files."dotfiles/wallpaper-dark.png".source = ./wallpaper-dark.png;
   hjem.users.m.xdg.config.files."dotfiles/wallpaper-light.png".source = ./wallpaper-light.png;
 
