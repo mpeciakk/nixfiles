@@ -38,5 +38,7 @@
     "/etc/NetworkManager/system-connections" = "0700";
     "/var/lib/iwd" = "0700";
     "/var/lib/bluetooth" = "0700";
+    "/var/lib/NetworkManager" = "0755";
+    "/var/lib/systemd/backlight" = "0755";
   };
 }
