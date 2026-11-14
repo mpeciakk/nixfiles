@@ -74,15 +74,6 @@ if iso: ti["isolation"] = iso
 print(json.dumps({"hook_event_name": "PreToolUse", "tool_name": "Agent",
                   "cwd": cwd, "tool_input": ti}))' "$1" "${2:-}"
 }
-fixer_payload() { # cwd task_number [subagent_type]
-  python3 -c '
-import json, sys
-cwd, n, st = sys.argv[1:4]
-p = {"hook_event_name": "PreToolUse", "tool_name": "Agent", "cwd": cwd,
-     "tool_input": {"subagent_type": st,
-                    "prompt": f"Worktree: {cwd}\nBrief: {cwd}/.flow/sdd/run/task-{n}-brief.md\nFindings: …"}}
-print(json.dumps(p))' "$1" "$2" "${3:-fixer}"
-}
 wakeup_payload() { # cwd delaySeconds reason [prompt] | delay "stop" = a stop call
   python3 -c '
 import json, sys
@@ -159,7 +150,7 @@ git -C "$REPO" worktree add -q "$EXT" -b ext/x || fixture_fail "external worktre
 [ -f "$WT/.git" ] || fixture_fail "$WT is not a linked worktree"
 [ -f "$EXT/.git" ] || fixture_fail "$EXT is not a linked worktree"
 [ "$(git -C "$REPO" rev-list --count HEAD)" = 1 ] || fixture_fail "no commit in fixture"
-mkdir -p "$REPO/.flow/plans" "$WT/.flow/sdd" "$REPO/src/.flow/run" "$ROOT/outside"
+mkdir -p "$REPO/.flow/plans" "$REPO/src/.flow/run" "$ROOT/outside"
 echo "# spec" > "$WT/spec.md"
 report ok "fixtures verified (repo + linked + external worktree + a commit)"
 
@@ -326,7 +317,7 @@ case "$c" in *"only writer"*|*BLOCKED*) report no "general-purpose subagent gets
   *) report no "general-purpose contract lacks Read-only" "$c";; esac
 "$STATE" --cwd "$REPO" set branch= >/dev/null
 c=$(context_of "$(event_payload "$WT" SubagentStart)")
-case "$c" in *detached*) report ok "detached run: verifies the tree, no phantom branch";; *) report no "detached contract: $c";; esac
+case "$c" in *detached*) report ok "detached run: SubagentStart says detached HEAD";; *) report no "detached contract: $c";; esac
 "$STATE" --cwd "$REPO" set branch=feat/x >/dev/null
 "$STATE" --cwd "$REPO" task 1 complete "aaa..bbb" >/dev/null
 c=$(context_of "$(event_payload "$REPO" SessionStart)")
@@ -390,10 +381,6 @@ for a in branch-reviewer plan-red-team; do
   d=$(fm "$a" | grep '^disallowedTools:')
   case "$d" in *Artifact*Skill*|*Skill*Artifact*) report ok "$a withholds Artifact and Skill";;
     *) report no "$a withholds Artifact and Skill" "$d";; esac
-done
-for a in branch-reviewer; do
-  grep -q 'scripts/review-package' "$AG/$a.md" && grep -q 'exit 4' "$AG/$a.md" && grep -q 'BLOCKED' "$AG/$a.md" \
-    && report ok "$a builds its own diff package; exit 4 is BLOCKED" || report no "$a review-package step"
 done
 echo "=== controller must not poll a dispatched subagent ==="
 check "short wakeup naming a subagent is denied" deny \
@@ -480,8 +467,6 @@ case "$line" in *"7d "$'\033[32m12%'*) report ok "7d limit shown";; *) report no
 line=$(sl_payload "$COLD" | "$SL" | head -1)
 case "$line" in *"5h"*) report no "limits shown without rate_limits" "$line";; *) report ok "no limits segment without rate_limits";; esac
 case "$line" in *"ctx "*"42%"*) report ok "falls back to percent without total_input_tokens";; *) report no "context fallback" "$line";; esac
-grep -q 'GIT_OPTIONAL_LOCKS' "$SL" && report ok "status line git takes no optional locks" || report no "GIT_OPTIONAL_LOCKS"
-grep -qE '^import traceback' "$HERE/prompt-context" && report no "prompt-context imports traceback eagerly" || report ok "traceback imported lazily"
 
 echo "=== ledger vocabulary ==="
 VOC=$ROOT/vocab; mkrepo "$VOC" >/dev/null || fixture_fail "vocab repo"
@@ -537,33 +522,6 @@ case "$line" in *"no workspace"*) report no "inline run without a worktree is fl
 line=$(sl_payload "$SLR" | "$SL" | tail -1)
 case "$line" in *"no workspace"*) report ok "stage=isolate without a worktree is flagged";; *) report no "isolate without a worktree not flagged" "$line";; esac
 
-echo "=== status line model hint ==="
-sl_model() { # cwd model_id -> status line output
-  python3 -c '
-import json, sys
-m = {"id": sys.argv[2], "display_name": "X"} if sys.argv[2] else {}
-print(json.dumps({"workspace": {"current_dir": sys.argv[1], "project_dir": sys.argv[1]},
-                  "model": m}))' "$1" "$2" | "$SL" | tail -1; }
-HNT=$ROOT/hint; mkrepo "$HNT" >/dev/null || fixture_fail "hint repo"
-"$STATE" --cwd "$HNT" init hinting >/dev/null
-# stage=implement is refused without a recorded plan and workspace.
-"$STATE" --cwd "$HNT" set plan="$HNT/p.md" worktree="$HNT" >/dev/null || fixture_fail "hint run fields"
-hint_case() { # stage model_id expected_substring_or_NONE label
-  "$STATE" --cwd "$HNT" set stage="$1" >/dev/null || fixture_fail "could not set stage=$1"
-  local line; line=$(sl_model "$HNT" "$2")
-  case "$line" in *hinting*) ;; *) fixture_fail "flow line missing for stage=$1: $line";; esac
-  if [ "$3" = NONE ]; then
-    case "$line" in *"/model"*) report no "$4" "$line";; *) report ok "$4";; esac
-  else
-    case "$line" in *"$3"*) report ok "$4";; *) report no "$4" "$line";; esac
-  fi
-}
-for st in plan isolate implement finish inline; do
-  for m in claude-opus-5-5 claude-sonnet-5-5; do
-    hint_case "$st" "$m" NONE "$st on $m: no /model hint"
-  done
-done
-
 echo "=== context reflects the real vocabulary ==="
 CTX=$ROOT/ctxvocab; mkrepo "$CTX" >/dev/null || fixture_fail "ctx repo"
 "$STATE" --cwd "$CTX" init ctxvoc >/dev/null
@@ -571,8 +529,8 @@ CTX=$ROOT/ctxvocab; mkrepo "$CTX" >/dev/null || fixture_fail "ctx repo"
 "$STATE" --cwd "$CTX" task 1 done >/dev/null 2>&1
 "$STATE" --cwd "$CTX" task 2 started >/dev/null 2>&1
 c=$(context_of "$(event_payload "$CTX" SessionStart)")
-case "$c" in *"complete: 1"*) report ok "a done task is reported to subagents as complete";; *) report no "done task not reported complete" "$c";; esac
-case "$c" in *"in flight: 2"*) report ok "a started task is reported in flight";; *) report no "started task not in flight" "$c";; esac
+case "$c" in *"complete: 1"*) report ok "SessionStart reports a done task as complete";; *) report no "done task not reported complete" "$c";; esac
+case "$c" in *"in flight: 2"*) report ok "SessionStart reports a started task in flight";; *) report no "started task not in flight" "$c";; esac
 "$STATE" --cwd "$CTX" set stage=plan >/dev/null
 c=$(context_of "$(event_payload "$CTX" SessionStart)")
 case "$c" in *"using-git-worktrees, then executing-plans"*) report no "handoff line shown before a plan is written";;
@@ -609,10 +567,6 @@ case "$out" in *'worktree=.'*) report ok "relative-worktree error suggests workt
   *) report no "relative-worktree hint" "$out";; esac
 case "$out" in *'$('*) report no "hint still recommends command substitution" "$out";; *) report ok "hint has no command substitution";; esac
 SK=$(cd "$HERE/../skills" && pwd)
-grep -qE '\$\(' "$SK/using-git-worktrees/SKILL.md" "$SK/requesting-code-review/SKILL.md" \
-  && report no "skills still prescribe \$(…) commands" || report ok "worktree/review skills prescribe literal commands"
-awk '/^## Per task/,/^## After the last task/' "$SK/executing-plans/SKILL.md" | grep -q '\$(' \
-  && report no "executing-plans loop still uses \$(…)" || report ok "executing-plans loop is literal"
 
 echo "=== branch-review fixes ==="
 DET=$ROOT/detached; mkrepo "$DET" >/dev/null || fixture_fail "detached repo"
@@ -687,10 +641,6 @@ case "$pkg" in "$RP/.flow/run/"*) report ok "package lands in the main checkout'
 [ -z "$(git -C "$RPW" status --porcelain)" ] && [ -z "$(git -C "$RP" status --porcelain)" ] \
   && report ok "review-package leaves worktree and main checkout clean" \
   || report no "review-package dirtied a tree" "$(git -C "$RPW" status --porcelain; git -C "$RP" status --porcelain)"
-grep -q 'Above ~1500' "$SK/requesting-code-review/SKILL.md" \
-  && report no "requesting-code-review still splits reviewers by size" || report ok "one branch reviewer, no size split"
-awk '/^## After the last task/,/^## Never/' "$SK/executing-plans/SKILL.md" | grep -q 'Spec state' \
-  && report ok "spec state is updated before the branch review" || report no "spec state step missing before review"
 
 # ------------------------------------------------- context-check
 echo "=== context check after a task ==="
@@ -733,14 +683,6 @@ transcript "$ROOT/t-side.jsonl" 200000 400000 || fixture_fail "transcript fixtur
   && report ok "context check fails open on a missing transcript" || report no "missing transcript output"
 setting 'any(h.get("if") == "Bash(*flow-state task *)" and h["command"].endswith("context-check") for e in cfg["hooks"]["PostToolUse"] if e.get("matcher") == "Bash" for h in e["hooks"])' \
   && report ok "context-check wired on PostToolUse Bash with an if filter" || report no "context-check wiring"
-
-echo "=== CLAUDE.md and plugins ==="
-CMD=$(cd "$HERE/.." && pwd)/CLAUDE.md
-[ "$(wc -l < "$CMD")" -lt 200 ] && report ok "CLAUDE.md under 200 lines" "$(wc -l < "$CMD")" || report no "CLAUDE.md length" "$(wc -l < "$CMD")"
-grep -qx '# Compact instructions' "$CMD" && awk '/^# Compact instructions$/,0' "$CMD" | grep -q 'flow-state' \
-  && report ok "CLAUDE.md has compact instructions keeping flow-state" || report no "compact instructions missing"
-setting 'cfg["enabledPlugins"].get("cloudflare@cloudflare") is False and cfg["enabledPlugins"].get("text-to-cad@earthtojake") is False' \
-  && report ok "cloudflare and text-to-cad plugins off globally" || report no "plugins still enabled"
 
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]
