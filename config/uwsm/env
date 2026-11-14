@@ -9,6 +9,11 @@ export ANSIBLE_HOME="$XDG_DATA_HOME"/toolchains/ansible
 export WINEPREFIX="$XDG_DATA_HOME"/wine
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
 export MUTAGEN_DATA_DIRECTORY="$XDG_DATA_HOME"/mutagen
+# Codex keeps one config.toml next to auth, sqlite logs and session state, so data, not config.
+export CODEX_HOME="$XDG_DATA_HOME"/codex
+# Directly in the state dir: bash creates the file, but not a missing parent directory.
+export HISTFILE="$XDG_STATE_HOME"/bash_history
+export PYTHON_HISTORY="$XDG_STATE_HOME"/python_history
 # npm settings as variables, not a tracked npmrc: `npm login` writes tokens into the userconfig
 # file, which stays the untracked default ~/.npmrc. Mirrored in nushell/env.nu for SSH/TTY logins.
 export NPM_CONFIG_PREFIX="$XDG_DATA_HOME"/toolchains/npm

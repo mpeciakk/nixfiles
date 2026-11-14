@@ -6,6 +6,11 @@ $env.NPM_CONFIG_PREFIX = ($env.HOME | path join '.local/share/toolchains/npm')
 $env.NPM_CONFIG_CACHE = ($env.HOME | path join '.cache/npm')
 $env.NPM_CONFIG_INIT_MODULE = ($env.HOME | path join '.config/npm/npm-init.js')
 
+# XDG locations, mirrored from uwsm/env for the same reason.
+$env.CODEX_HOME = ($env.HOME | path join '.local/share/codex')
+$env.HISTFILE = ($env.HOME | path join '.local/state/bash_history')
+$env.PYTHON_HISTORY = ($env.HOME | path join '.local/state/python_history')
+
 # Mirrored from uwsm/env, same reason: Claude Code's Ctrl-G and git open nvim.
 $env.EDITOR = 'nvim'
 $env.VISUAL = 'nvim'
