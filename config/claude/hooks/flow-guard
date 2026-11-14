@@ -9,7 +9,7 @@ Enforces three things:
      workspace is how a run loses track of where its work went.
 
   2. **The controller does not poll for a dispatched subagent.** A short-interval
-     `ScheduleWakeup` naming a reviewer, red-team or subagent is denied: the
+     `ScheduleWakeup` naming a dispatched role (`DISPATCHED_ROLES`, `task N review`) is denied: the
      harness already re-invokes the session with a `<task-notification>` when
      that work finishes, and each wakeup re-reads the whole context. This one
      runs with or without run state.
@@ -177,7 +177,8 @@ def check_workspace(payload, cwd, module, root, worktree, task):
         where = worktree_add_dir(command)
         if where is None:
             allow()
-        if module.repo_root(os.path.join(cwd, where)) != root:
+        other = module.repo_root(os.path.join(cwd, where))
+        if other and other != root:  # unresolved (a $VAR the shell expands later) stays denied
             allow()  # a worktree of another repository, not this run's
     deny(
         f"This run already has a workspace: {worktree}. A second one is how a run "

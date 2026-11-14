@@ -197,6 +197,7 @@ check "git commit (not enforced, by design)" allow "$(bash_payload "$REPO" 'git 
 OTHER=$ROOT/other; mkrepo "$OTHER" >/dev/null || fixture_fail "other repo"
 check "git -C <another repo> worktree add" allow "$(bash_payload "$WT" "git -C $OTHER worktree add $ROOT/other-wt HEAD")"
 check "git -C <external worktree of this repo> worktree add" deny "$(bash_payload "$WT" "git -C $EXT worktree add ../o")"
+check "git -C <unexpanded variable> worktree add" deny "$(bash_payload "$WT" 'git -C "$HOME/x" worktree add ../o')"
 
 echo "=== deny messages carry the run, not an off switch ==="
 r=$(deny_reason "$(edit_payload "$REPO" "$REPO/.flow/run/state.json" "" "" Write)")
