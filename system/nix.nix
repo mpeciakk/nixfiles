@@ -1,4 +1,8 @@
-{inputs, ...}: {
+{
+  config,
+  inputs,
+  ...
+}: {
   nixpkgs.config.allowUnfree = true;
   system.stateVersion = "26.11";
 
@@ -25,4 +29,6 @@
     enable = true;
     flake = "/home/m/projects/nixfiles";
   };
+  # programs.nh sets it only in /etc/set-environment, which a nushell TTY login never reads
+  environment.sessionVariables.NH_FLAKE = config.programs.nh.flake;
 }

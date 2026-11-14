@@ -54,7 +54,7 @@ cd "$(git rev-parse --show-toplevel)"
 # Listed before the package file exists, so it never lists itself. NUL-separated:
 # the text form quotes non-ASCII names, which then match no file.
 untracked=()
-[ "$worktree" -eq 1 ] && mapfile -d '' -t untracked < <(git ls-files -z --others --exclude-standard)
+[ "$worktree" -eq 1 ] && mapfile -d '' -t untracked < <(git ls-files -z --others --exclude-standard | grep -zv '/$')
 
 {
   echo "# Review package: ${base}..${label}"
@@ -74,7 +74,7 @@ untracked=()
   if [ "$worktree" -eq 1 ]; then
     git diff -U10 "$base"
     for f in "${untracked[@]}"; do
-      # Exit 1 means "differs" — the expected case; anything above is an error.
+      # rc 1 = differs; git also returns 1 on unreadable paths, hence the filter above
       git diff --no-index -U10 /dev/null "$f" || [ $? -eq 1 ]
     done
   else

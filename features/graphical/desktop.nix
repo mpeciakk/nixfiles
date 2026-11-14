@@ -26,7 +26,6 @@
       // dotfiles.link "kitty" ["kitty.conf" "theme.conf"]
       // dotfiles.link "uwsm" ["env"]
       // dotfiles.link "mpv" ["mpv.conf"]
-      // dotfiles.linkDir "wireplumber"
       // {
         "quickshell".source = "/home/m/projects/quickshell-dynamic-island";
         "xdg-terminals.list".source = dotfiles.source "config/xdg-terminals.list";

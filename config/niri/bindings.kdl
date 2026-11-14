@@ -15,7 +15,6 @@ binds {
     // Mod+M → island toggle media
     // Mod+Shift+E → island toggle power (conflicts: screenshot)
     // Mod+Shift+H → island hide
-    // XF86MonBrightnessUp / XF86MonBrightnessDown → brightnessctl set 5%+ / 5%-
 
     Mod+O repeat=false { toggle-overview; }
 
@@ -71,7 +70,7 @@ binds {
     Mod+B { toggle-window-floating; }
     Mod+Shift+B { switch-focus-between-floating-and-tiling; }
 
-    Mod+Shift+E { spawn-sh "rm -f /tmp/screenshot.png && niri msg action screenshot --show-pointer=false"; }
+    Mod+Shift+E { screenshot show-pointer=false; }
 
     XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "-l" "1.0" "@DEFAULT_AUDIO_SINK@" "5%+"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
@@ -82,4 +81,7 @@ binds {
     XF86AudioNext        allow-when-locked=true repeat=false { spawn "playerctl" "next"; }
     XF86AudioPrev        allow-when-locked=true repeat=false { spawn "playerctl" "previous"; }
     XF86AudioStop        allow-when-locked=true repeat=false { spawn "playerctl" "stop"; }
+
+    XF86MonBrightnessUp   allow-when-locked=true { spawn "brightnessctl" "set" "5%+"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "set" "5%-"; }
 }

@@ -2,8 +2,6 @@
 # Nix (hosts/<host>/hardware.nix, environment.sessionVariables).
 export QT_QPA_PLATFORM=wayland
 export SDL_VIDEODRIVER=wayland
-export ELECTRON_OZONE_PLATFORM_HINT=wayland
-export OZONE_PLATFORM=wayland
 export _JAVA_AWT_WM_NONREPARENTING=1
 
 export GRADLE_USER_HOME="$XDG_DATA_HOME"/toolchains/gradle

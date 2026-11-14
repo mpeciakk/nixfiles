@@ -16,9 +16,10 @@ Workflow rules:
    BEFORE domain skills.
 2. Navigate code with grep/find via Bash + Read; a file you are not editing is
    read by range, not whole.
-3. Library/API → context7 (`/docs`). A fact a tool can check (SHA, branch
-   state, command output, whether a symbol exists) — check it, don't state it
-   from memory.
+3. Library/API → context7 MCP: `resolve-library-id`, then `query-docs`; only
+   its `authenticate` tools listed → ask me to log it in via `/mcp`. A fact a
+   tool can check (SHA, branch state, command output, whether a symbol
+   exists) — check it, don't state it from memory.
 4. Nothing is "done" without running it and showing proof.
 5. Implement a run in a worktree via `EnterWorktree`; keep run state (main
    thread) in `~/.claude/hooks/flow-state`. You write the task code yourself;
@@ -49,10 +50,15 @@ I ask — I talk to them.
 - Only the `[CTX] <host>` line in a turn tells you the machine (the hook reads
   the hostname, `pc` or `laptop`) — not the prompt or paths. A turn without
   `[CTX]` is not attributed to any host.
-- `~/projects`, `~/work`, `~/obsidian` and `~/.claude/projects` are one working
-  tree with one `.git` on both machines: nothing to merge between hosts, a
-  branch switch on one is a switch on both. Exception: `~/zs1` syncs without
-  `.git`, so its git history is separate on each machine.
+- `~/projects`, `~/work`, `~/studies`, `~/obsidian` and `~/.claude/projects`
+  are one working tree with one `.git` on both machines: nothing to merge
+  between hosts, a branch switch on one is a switch on both. Per machine, not
+  synced: `.git/index`, `.git/logs/HEAD`, `.git/logs/refs/heads/`,
+  `.git/logs/refs/remotes/`, and a linked worktree's index and logs. After the
+  other machine committed or switched branch, `git status` shows phantom `MM`
+  files: if `git diff HEAD --stat` is empty, `git reset` resyncs the index.
+  Exception: `~/zs1` syncs without `.git`, so its git history is separate on
+  each machine.
 - Never run git operations in the same repo on both machines at once.
 - Write a machine-dependent fact (spec, note, commit, report) with the name
   `pc` or `laptop`, never "this machine".

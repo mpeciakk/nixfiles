@@ -36,8 +36,7 @@ the gist of, and review. None of them writes in this tree.
 4. **Verify:** the task's tests and the project suite, run, output shown.
 5. **Commit** on the branch, then record the range from `git log`:
    `flow-state task N done "<base7>..<head7>"`. After the run's first done,
-   if the repo has a remote, `git push -u origin <branch>`: a lost worktree
-   takes unpushed branch commits with it, and nothing can recover them.
+   if the repo has a remote, `git push -u origin <branch>`.
 6. **Context check.** A hook on `flow-state task … done` reports when the
    session is above 300k tokens. When it does, stop and ask the user for
    `/clear`, then "kontynuuj": the ledger resumes the run at the next task, and
@@ -49,10 +48,11 @@ Then the next task, without checking in.
 
 - Reversible and inside the plan's scope (a name, an approach, an edge case
   the plan got wrong): rule on it yourself. Append `- Task N: <ruling> —
-  <why> — <cost if wrong>` to a `## Rulings` section at the end of the plan's
-  copy in the worktree (`<worktree>/.flow/plans/<plan basename>`, not the
-  main-checkout path `flow-state get plan` returns) and commit it with the
-  task. The user sees every ruling at finish.
+  <why> — <cost if wrong>` to a `## Rulings` section at the end of the plan:
+  its worktree copy (`<worktree>/.flow/plans/<plan basename>`) if
+  `.flow/plans` is tracked (`git check-ignore -q .flow/plans` fails), committed
+  with the task; else the file `flow-state get plan` names, uncommitted. The
+  user sees every ruling at finish.
 - It changes the scope or a spec decision, or is irreversible (data, external
   side effects, security): the user's call. Show the plan line and the
   evidence.

@@ -6,8 +6,8 @@ let carapace_completer = {|spans: list<string>|
     CARAPACE_LENIENT=1 carapace $spans.0 nushell ...$spans | from json
 }
 
-$env.config.completions.external.enable = true
-$env.config.completions.external.completer = {|spans|
+$env.config.completions.external.completer = {|place|
+    let spans = $place.command
     # Expand a leading alias to its real command so completions match it
     # (e.g. `ga ` -> `git add . `), keeping the rest of the typed words.
     let expanded = scope aliases | where name == $spans.0 | get -o 0.expansion

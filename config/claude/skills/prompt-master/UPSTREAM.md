@@ -17,3 +17,4 @@ Local changes since that commit:
   thinking-depth lines; a final report instead of per-step progress lines.
 - patterns.md #36 is model-neutral; SKILL.md names the 37-pattern reference.
 - SKILL.md: plain-emphasis verification item; assumptions named in the 💡 line.
+- SKILL.md description: "Use when…" and triggers only, per writing-skills.

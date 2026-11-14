@@ -33,6 +33,12 @@
 
   services.gnome.gcr-ssh-agent.enable = false;
 
+  # without it the portal reports no preference and libadwaita windows draw light
+  programs.dconf.profiles.user.databases = [{settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";}];
+
+  # journald applies a system unit's LogLevelMax to its whole cgroup: drops xwayland-satellite's debug flood
+  systemd.services."user@".serviceConfig.LogLevelMax = "info";
+
   xdg.portal = {
     enable = true;
     extraPortals = [pkgs.xdg-desktop-portal-gnome];

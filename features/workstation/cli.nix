@@ -21,7 +21,6 @@
     xdg.config.files =
       dotfiles.link "dotfiles" ["config.json"]
       // dotfiles.link "herdr" ["config.toml" "plugins/config/herdr-navigator/config.toml"]
-      // dotfiles.link "herdr-automatic-rename" ["config.sh"]
       // builtins.mapAttrs (_: f: f // {clobber = true;}) (
         dotfiles.link "git" ["config" "ignore" "allowed_signers"]
         // dotfiles.link "superfile" ["config.toml"]

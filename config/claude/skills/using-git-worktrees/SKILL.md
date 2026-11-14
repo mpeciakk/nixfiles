@@ -31,7 +31,8 @@ Otherwise you are in a normal checkout. CLAUDE.md workflow rule 5 — a run is
 implemented in a worktree — is the consent; do not stop to ask for it
 again. Ask only if the user has said otherwise in this session, and if they
 decline isolation, work in place: create a feature branch first if HEAD is on
-main/master, then record it with Step 2's block anyway — `worktree` pointing at
+main/master — unless the user asked for main itself —, then record it with
+Step 2's block anyway — `worktree` pointing at
 this checkout. Skipping the record leaves the run without a workspace, which
 breaks resuming *and* blocks `stage=finish` later.
 
@@ -50,7 +51,7 @@ status` and where `git add -A` would stage it as an embedded repository. Run
 this in the main checkout, as is:
 
 ```bash
-mkdir -p .claude/worktrees && git check-ignore -q .claude/worktrees || { echo '.claude/worktrees/' >> .gitignore && git add .gitignore && git commit -m "chore: ignore worktrees"; }
+mkdir -p .claude/worktrees && git check-ignore -q .claude/worktrees || { printf '\n.claude/worktrees/\n' >> .gitignore && git add .gitignore && git commit -m "chore: ignore worktrees"; }
 ```
 
 The `mkdir` makes the directory exist, so `check-ignore` answers correctly; the
