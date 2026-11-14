@@ -21,8 +21,7 @@ vim.diagnostic.config({
 
 local map = vim.keymap.set
 -- 0.12 defaults cover the rest: K, grn, gra, grr, gri, grt, gO, [d, ]d, <C-w>d, insert <C-s>
-map("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
-map("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
+-- gd/gD are set per buffer in LspAttach: without a server the built-in gd/gD still jump
 map({ "n", "x" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "Code action (gra)" })
 map("n", "<leader>cr", vim.lsp.buf.rename, { desc = "Rename symbol (grn)" })
 map("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line diagnostics" })
@@ -37,6 +36,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
   group = vim.api.nvim_create_augroup("my.lsp", {}),
   callback = function(args)
     local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client and client:supports_method("textDocument/definition") then
+      map("n", "gd", vim.lsp.buf.definition, { buffer = args.buf, desc = "Go to definition" })
+    end
+    if client and client:supports_method("textDocument/declaration") then
+      map("n", "gD", vim.lsp.buf.declaration, { buffer = args.buf, desc = "Go to declaration" })
+    end
     if client and client.name == "clangd" then
       map("n", "<leader>ch", "<cmd>LspClangdSwitchSourceHeader<cr>", { buffer = args.buf, desc = "Source/header" })
     end
