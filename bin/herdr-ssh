@@ -5,8 +5,8 @@
 
 def hosts [] {
     open ~/.ssh/config | lines
-    | parse --regex '^\s*Host\s+(?<names>.+)$'
-    | get names | each { split row ' ' } | flatten
+    | parse --regex '(?i)^\s*Host(?:\s*=\s*|\s+)(?<names>[^#]+)'
+    | get names | each { str trim | split row -r '\s+' } | flatten
     | where {|h| $h != '' and not ($h =~ '[*?!]') }
 }
 
@@ -87,12 +87,11 @@ def stash-sudo-password [host: string, pw: string] {
 
 def browse [host: string, --root] {
     let mnt = $"($env.HOME)/mnt/($host)(if $root { '-root' } else { '' })"
-    mkdir $mnt
     # Popup jest modalny, więc mount nie ma drugiego użytkownika; zostaje tylko
     # po zabitym popupie i wtedy bywa martwy, dlatego zawsze montujemy od nowa.
-    if (do { mountpoint -q $mnt } | complete).exit_code == 0 {
-        fusermount3 -uz $mnt
-    }
+    # martwy mount (zabity sshfs) daje ENOTCONN na stat: mkdir i mountpoint by na nim padły
+    do { fusermount3 -uzq $mnt } | complete | ignore
+    mkdir $mnt
 
     let base = "reconnect,ServerAliveInterval=15,ServerAliveCountMax=3"
     let src = if $root { $"($host):/" } else { $"($host):" }
