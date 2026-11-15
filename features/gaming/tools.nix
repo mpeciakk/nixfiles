@@ -4,6 +4,7 @@
   users.users.m.extraGroups = ["gamemode"];
 
   hjem.users.m.packages = with pkgs; [
+    lutris
     mangohud
     prismlauncher
   ];
