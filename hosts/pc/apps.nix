@@ -14,5 +14,6 @@
     })
     pkgs.pwvucontrol
     pkgs.obsidian
+    pkgs.spotify
   ];
 }
