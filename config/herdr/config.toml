@@ -56,8 +56,8 @@ height = "90%"
 [[keys.command]]
 key = "prefix+e"
 type = "popup"
-command = "herdr-here spf"
-description = "superfile"
+command = "herdr-here yazi"
+description = "yazi"
 width = "90%"
 height = "90%"
 

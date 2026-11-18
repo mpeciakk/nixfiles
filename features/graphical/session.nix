@@ -41,8 +41,21 @@
 
   xdg.portal = {
     enable = true;
-    extraPortals = [pkgs.xdg-desktop-portal-gnome];
+    extraPortals = [pkgs.xdg-desktop-portal-gnome pkgs.xdg-desktop-portal-termfilechooser];
+    # the rest of config.niri comes from the NixOS niri module
+    config.niri."org.freedesktop.impl.portal.FileChooser" = "termfilechooser";
   };
+
+  # file picker = yazi in kitty; no --single-instance, it would return before the choice is made.
+  # User config: the system one is read from the package's own etc/xdg in the store, not /etc/xdg.
+  hjem.users.m.xdg.config.files."xdg-desktop-portal-termfilechooser/config".text = ''
+    [filechooser]
+    cmd=${pkgs.xdg-desktop-portal-termfilechooser}/share/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh
+    default_dir=$HOME
+    env=TERMCMD=kitty --class termfilechooser
+    open_mode=suggested
+    save_mode=last
+  '';
 
   security.rtkit.enable = true;
 

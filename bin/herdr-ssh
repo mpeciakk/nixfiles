@@ -1,7 +1,7 @@
 #!/usr/bin/env nu
 # Picker hostów z ~/.ssh/config, odpalany jako popup herdra.
 # Akcje: shell w nowej zakładce, lazydocker przez `docker system dial-stdio`,
-# superfile na sshfs; wariant root montuje przez sudo z hasłem podanym w popupie.
+# yazi na sshfs; wariant root montuje przez sudo z hasłem podanym w popupie.
 
 def hosts [] {
     open ~/.ssh/config | lines
@@ -109,7 +109,7 @@ def browse [host: string, --root] {
     # Hasło znika zaraz po zamontowaniu; reconnect po zerwaniu wymaga więc nowego popupu.
     if $root { $"rm -rf '($stash.dir)'" | ssh $host sh }
     if $r.exit_code != 0 { fail $"sshfs ($host): ($r.stderr | str trim)" }
-    try { spf $mnt }
+    try { yazi $mnt }
     fusermount3 -u $mnt
 }
 

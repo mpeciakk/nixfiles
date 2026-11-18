@@ -12,6 +12,7 @@ window-rule {
     match title=".*wants to save$"
     match title=".*wants to open$"
     match title=".*Minecraft.*"
+    match app-id="^termfilechooser$"
 
     open-floating true
 }

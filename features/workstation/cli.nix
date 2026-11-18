@@ -12,8 +12,7 @@
       jq
       herdr
       lazygit
-      superfile
-      (runCommand "spf" {} "mkdir -p $out/bin && ln -s ${superfile}/bin/superfile $out/bin/spf")
+      yazi
       sshfs
       socat
     ];
@@ -23,7 +22,6 @@
       // dotfiles.link "herdr" ["config.toml" "plugins/config/herdr-navigator/config.toml"]
       // builtins.mapAttrs (_: f: f // {clobber = true;}) (
         dotfiles.link "git" ["config" "ignore" "allowed_signers"]
-        // dotfiles.link "superfile" ["config.toml"]
       );
 
     files = dotfiles.bin ["herdr-here" "herdr-ssh" "claude-baseline"];

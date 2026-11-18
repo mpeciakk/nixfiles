@@ -17,5 +17,16 @@ alias ladu = ls --du -a
 
 alias cat = bat
 
+# yazi; on exit cd into the directory it was left in
+def --env y [...args] {
+    let tmp = (mktemp -t "yazi-cwd.XXXXXX")
+    ^yazi ...$args --cwd-file $tmp
+    let cwd = (open $tmp)
+    if $cwd != $env.PWD and ($cwd | path exists) {
+        cd $cwd
+    }
+    rm -fp $tmp
+}
+
 # bypass only reachable via Shift+Tab, not on at start (permissions.defaultMode would enable it)
 alias claude = ^claude --allow-dangerously-skip-permissions

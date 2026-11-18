@@ -1,8 +1,0 @@
-# superfile: only what differs from the built-in defaults (checked against the 1.6.0 binary);
-# the rest comes from the binary, so missing fields must be allowed.
-ignore_missing_fields = true
-
-editor = "nvim"
-code_previewer = "bat"
-enable_file_preview_border = true
-zoxide_support = true
