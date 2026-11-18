@@ -27,15 +27,9 @@ in {
           target = false;
         };
         dpi = 1500;
+        # side buttons (0x53, 0x56) stay native BTN_SIDE/BTN_EXTRA: games bind them as
+        # Button4/5, browsers handle back/forward themselves
         buttons = [
-          {
-            cid = mkHex "0x56";
-            action = key ["KEY_FORWARD"];
-          }
-          {
-            cid = mkHex "0x53";
-            action = key ["KEY_BACK"];
-          }
           {
             cid = mkHex "0xc3";
             action = {
