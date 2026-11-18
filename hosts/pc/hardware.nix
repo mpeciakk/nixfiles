@@ -47,6 +47,8 @@
   };
   boot.extraModprobeConfig = ''
     options nvidia NVreg_InitializeSystemMemoryAllocations=0
+    # Keychron K8 reports Apple's vendor id; fnmode=2 makes F1-F12 primary, media under Fn
+    options hid_apple fnmode=2
   '';
   boot.blacklistedKernelModules = ["ucsi_ccg"];
 }
