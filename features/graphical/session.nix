@@ -23,7 +23,11 @@
     settings.default_session.command = "${pkgs.tuigreet}/bin/tuigreet --cmd 'uwsm start niri-session'";
   };
 
-  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+  environment.sessionVariables = {
+    NIXOS_OZONE_WL = "1";
+    # Qt file dialogs (Prism Launcher) through the portal, i.e. yazi
+    QT_QPA_PLATFORMTHEME = "xdgdesktopportal";
+  };
 
   security.soteria.enable = true;
   systemd.user.services.polkit-soteria.serviceConfig.ExecStart = lib.mkForce (pkgs.writeShellScript "soteria-session" ''
@@ -59,10 +63,17 @@
 
   security.rtkit.enable = true;
 
-  services.udisks2.enable = true;
-
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
+    noto-fonts
+    noto-fonts-cjk-sans
     noto-fonts-color-emoji
   ];
+
+  fonts.fontconfig.defaultFonts = {
+    sansSerif = ["Noto Sans"];
+    serif = ["Noto Serif"];
+    monospace = ["JetBrainsMono Nerd Font"];
+    emoji = ["Noto Color Emoji"];
+  };
 }
