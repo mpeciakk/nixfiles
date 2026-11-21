@@ -58,8 +58,36 @@
   networking.networkmanager = {
     enable = true;
     wifi.backend = "iwd";
+    # per-link DNS, so the tunnel can own just *.local.peciak.xyz
+    dns = "systemd-resolved";
   };
+  services.resolved.enable = true;
   users.users.m.extraGroups = ["networkmanager"];
+
+  # Split tunnel to the home LAN via the WireGuard hub on sirius (~/projects/cloud, "Dostęp zdalny").
+  # No autostart: on home Wi-Fi the laptop is itself in 192.168.1.0/24 and the tunnel would take that route.
+  # Of 192.168.0.0/24 only AdGuard (.106) and NPM (.108): the whole /24 collides with too many foreign networks.
+  # Split DNS: only *.local.peciak.xyz goes to AdGuard, everything else stays on the local link.
+  networking.wg-quick.interfaces.wg0 = {
+    address = ["10.99.0.3/32"];
+    privateKeyFile = "/persist/etc/wireguard/wg0.key";
+    autostart = false;
+    # the path to the home LAN carries at most 1392-byte inner packets (ping -M do); at 1420 TLS handshakes stall
+    mtu = 1380;
+    postUp = [
+      "${pkgs.systemd}/bin/resolvectl dns wg0 192.168.0.106"
+      "${pkgs.systemd}/bin/resolvectl domain wg0 '~local.peciak.xyz'"
+      "${pkgs.systemd}/bin/resolvectl default-route wg0 false"
+    ];
+    peers = [
+      {
+        publicKey = "UU0IJZvVAopjk6CQeY10LgE5nO4IRht/t3rwAS4r5zo="; # hub sirius
+        endpoint = "vpn.peciak.xyz:51820";
+        allowedIPs = ["10.99.0.0/24" "192.168.1.0/24" "192.168.0.106/32" "192.168.0.108/32"];
+        persistentKeepalive = 25;
+      }
+    ];
+  };
 
   hardware.bluetooth.enable = true;
 
