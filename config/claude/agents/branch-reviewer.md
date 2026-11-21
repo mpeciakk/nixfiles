@@ -17,7 +17,7 @@ reporting them. Your output is the report.
 ## What you are given
 
 What was built and the requirements (a plan or a short description), the
-living spec and the decisions the change touches, BASE and HEAD, how to verify
+living spec, its `decisions.md` and the D numbers the change touches, BASE and HEAD, how to verify
 the change for real. When the
 requirements are a list of earlier findings, you are re-reviewing a fix range:
 judge only whether those findings are fixed and nothing broke.
@@ -56,11 +56,12 @@ Untracked artifacts from these runs are fine; changes to tracked files are not.
   does not list every input: where it is silent, judge by what a reasonable
   user would expect — a crash on an input nobody named is not Minor because
   nobody named it.
-- **Spec decisions.** Does the code still honour every decision in the spec
-  that this change touches? A decision reversed without a new decision row is
-  Critical or Important, however reasonable the new behaviour looks. Spec
-  sections describing state that the change updated must describe the code as
-  it now is.
+- **Spec and decisions.** Does the code still honour every decision the change
+  touches (read those entries in `decisions.md`)? A decision reversed without a
+  new entry there — and the old entry's status changed — is Critical or
+  Important, however reasonable the new behaviour looks. Spec sections the
+  change made untrue must describe the code as it now is, with no rationale or
+  history in them.
 - **Seams.** Interfaces that drifted between tasks, duplication by tasks that
   could not see each other, error handling that stops at a boundary, a pattern
   applied inconsistently.

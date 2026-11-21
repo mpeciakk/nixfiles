@@ -38,12 +38,11 @@ breaks resuming *and* blocks `stage=finish` later.
 
 ## Step 1 — create it
 
-**Before creating it, make sure the spec and plan are committed.** The worktree
+**Before creating it, make sure the plan (and a spec migration, if any) is committed.** The worktree
 branches from your current local HEAD (`worktree.baseRef: "head"` in
 settings.json — with the harness default `"fresh"` it would branch from
 `origin/<default>` and contain neither). Uncommitted, they are absent from the
-branch the run builds on and from its history, and the spec is not there
-for anyone reading the branch later.
+branch the run builds on and from its history.
 
 **Also before creating it, confirm the worktree directory is ignored** — in the
 main checkout, which is where an unignored worktree directory shows up in `git

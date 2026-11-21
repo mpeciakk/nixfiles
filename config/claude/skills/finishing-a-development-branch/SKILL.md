@@ -15,9 +15,9 @@ after the review — run the project's full suite. A branch with no code changes
 needs no suite. If anything fails, report the failures and stop: merging red
 code or opening a failing PR costs more than the delay.
 
-The living spec was brought up to date before the branch review
-(executing-plans). If a fix after the review changed something the
-spec describes, update that section now and commit it.
+The spec and `decisions.md` were brought up to date before the branch review
+(executing-plans). If a fix after the review changed something they
+describe, update them now and commit.
 
 ## Step 2 — what kind of workspace is this?
 
@@ -108,8 +108,7 @@ over.
 the branch on origin, if pushed — and require the user to type `discard`. Then
 clean up the workspace (Step 6) and, if it was pushed,
 `git push origin --delete <feature-branch>`. The plan commit on <base-branch>
-(`git log --grep='^plan: '`) stays: it put this run's D rows into the spec.
-Name it and ask whether to `git revert` it.
+(`git log --grep='^plan: '`), if any, stays as a record of the attempt.
 
 ## Step 6 — clean up the workspace
 

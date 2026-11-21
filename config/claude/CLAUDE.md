@@ -25,12 +25,12 @@ Workflow rules:
    thread) in `~/.claude/hooks/flow-state`. You write the task code yourself;
    subagents only read — parallel work, verbose output, review. Gates: skill
    `development-workflow`.
-6. Read the living `spec.md` (root or per component: what the project is,
-   decisions in force, open points) BEFORE asking me questions. A decision
-   enters the spec at the plan gate; update the sections describing state after
-   the last task, before the branch review. Fix or delete any spec sentence
-   that contradicts the code. A project without a spec → separate job (skill
-   `writing-specs`), not a by-product of the current change.
+6. Read the living `spec.md` (root or per component: what the project is
+   now) BEFORE asking me questions; `decisions.md` beside it holds the why. A
+   change's decisions and the spec sections it made untrue land with its code.
+   Fix or delete any spec sentence that contradicts the code. A spec still
+   holding a decision table → migrate it (`writing-specs`) before a change
+   adds or changes a decision. No spec → separate job (`writing-specs`).
 7. Call the advisor only: once per run, before the plan is approved; when the
    same error returns after 2 fix attempts; before an irreversible or
    outward-facing action.

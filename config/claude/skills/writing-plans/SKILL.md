@@ -14,7 +14,11 @@ Open the run if nobody has: `~/.claude/hooks/flow-state init <slug>`, then
 `flow-state set stage=plan`.
 
 Read the project's living spec before asking anything — for a split spec, the
-index and the topic files this change touches. Then the code: grep for the
+index and the topic files this change touches — and the `decisions.md`
+entries of the `(Dn)` the change touches. A spec still holding a decision
+table (`grep -qE '^\| *D[0-9]+ *\|'` on the spec and its topic files) and a
+change that adds or changes a decision: migrate it first (writing-specs), its
+own commit, then plan. Then the code: grep for the
 callers of what the change touches (its blast radius), Read by range. Recent
 commits.
 
@@ -46,11 +50,11 @@ to the user.
 # <Change> — plan
 
 ## Goal
-One sentence. Spec: <path to the living spec>, <decision number(s) added>
-(omit if the project has none).
+One sentence. Spec: <path to the living spec> (omit if the project has none).
 
 ## Decisions
 - D<n> <decision> — <why>. Rejected: <alternative> (<why not>).
+  (n continues after the last `## D` in the spec's decisions.md.)
 
 ## Constraints
 Project-wide requirements a task must not break, one line each, values
@@ -89,17 +93,11 @@ plan; only a real call checks the plan against reality.
 
 ## 4. The living spec
 
-At the gate, write the approved decisions into the living spec the way it
-already records them: a row in its decision table (continue the numbering) or
-a dated sentence in the section the decision governs. New unknowns go to its
-open points; unknowns this change closes get struck, dated. Cite code by path
-and symbol, never by line. For a split spec, the row goes into the topic file
-that owns the section, and the index's next free D number moves in the same
-commit. If the file you write into is over 40 KB, say so in one line — the
-split is a separate writing-specs job.
-
-Sections describing state (architecture, data model, API) change after the
-last task, before the branch review — not here: the code does not exist yet.
+Nothing goes into the spec or `decisions.md` at the gate: until the code
+exists, the plan's Decisions section is the record. After the last task,
+executing-plans writes the decisions and the state sections together, in one
+commit with the code they describe. A decision that reverses an existing Dn
+says so in its line (`reverses D36`).
 
 No living spec: the plan's Decisions section is the record; offer
 writing-specs as a separate job.
@@ -137,10 +135,10 @@ with the plan.
 
 ## 7. The gate
 
-Commit the plan and the spec change together, then record:
+Commit the plan, then record:
 
 ```bash
-git add .flow/plans/<file>.md <red-team log, if red-team ran> <spec files> && git commit -m "plan: <change>"
+git add .flow/plans/<file>.md <red-team log, if red-team ran> && git commit -m "plan: <change>"
 ~/.claude/hooks/flow-state set stage=plan plan="$(git rev-parse --show-toplevel)/.flow/plans/<file>.md" spec=<absolute spec path>
 ```
 
@@ -148,8 +146,7 @@ The commit lands on the current branch before any worktree exists — the
 worktree branches from HEAD and needs it. Say so.
 
 If `git check-ignore -q .flow/plans` succeeds, the project keeps `.flow/` out
-of git: commit only the spec change; the plan lives at the main-checkout path
-only.
+of git: nothing to commit; the plan lives at the main-checkout path only.
 
 Present: the decisions, the tasks (one line each), the red-team objections
 and what you did with each, the commit. Wait for "go".

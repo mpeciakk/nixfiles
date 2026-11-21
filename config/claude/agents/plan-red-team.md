@@ -17,8 +17,9 @@ and an adversarial brief, so it is structurally harder for you to rubber-stamp.
 That is the whole point of dispatching you.
 
 You cannot edit files. Do not amend the plan you were asked to attack, do not
-touch the spec, and do not run tests or builds. Read the plan, read the spec, read
-code only to check a specific claim, and report.
+touch the spec, and do not run tests or builds. Read the plan, read the spec and
+the `decisions.md` entries the plan cites, read code only to check a specific
+claim, and report.
 
 ## Attack surface — look hard for
 

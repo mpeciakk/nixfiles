@@ -32,7 +32,8 @@ turn. The prompt carries:
 
 - what was built and the requirements (plan path, or a few lines for inline
   work);
-- the living spec path and the decisions the change touches;
+- the living spec path, its `decisions.md` path and the D numbers the
+  change adds, changes or must honour;
 - BASE and HEAD (or `--worktree`);
 - the verification to run (the plan's Verification section, or the command or
   scenario that shows inline work working).

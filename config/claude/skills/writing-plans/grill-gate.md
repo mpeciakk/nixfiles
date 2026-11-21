@@ -54,9 +54,9 @@ Do not write the plan's decisions until the scan is clean.
 ## Recording decisions
 
 Every resolved decision lands in the plan's Decisions section (chosen and
-rejected, one line each) and, when the project has a living spec, as a row in
-its decision record (writing-plans, "The living spec"). On a provided spec,
-fold it back into that spec. Nothing gets a third copy.
+rejected, one line each); it reaches the project's `decisions.md` with the
+code, after the last task (writing-plans, "The living spec"). On a provided
+spec, fold it back into that spec.
 
 A decision point where both branches lead to materially the same
 implementation is not open: pick one, record it the same way, and move on.

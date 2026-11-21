@@ -19,7 +19,7 @@ not a run (✋ = you decide):
 | 1 | Plan — decisions + tasks in one document | `writing-plans` (+ red-team for 2+ tasks) | ✋ "go" |
 | 2 | Isolate | `using-git-worktrees` | — |
 | 3 | Implement — the session works each task (a domain of the change) in the worktree | `executing-plans` | — |
-| 4 | Review — spec state sections first, then the whole branch: tests, real verification, spec | `requesting-code-review` | — |
+| 4 | Review — spec and `decisions.md` first, then the whole branch: tests, real verification, spec | `requesting-code-review` | — |
 | 5 | Finish — suite unless the review's run still holds, merge | `finishing-a-development-branch` | ✋ merge + push / PR / keep / discard |
 
 Run state lives in `flow-state`, so "kontynuuj" in a fresh session resumes at
@@ -33,7 +33,9 @@ the code rules (from [karpathy-guidelines](https://github.com/multica-ai/andrej-
 [ponytail](https://github.com/dietrichgebert/ponytail)), candor, and response
 shape (from [ayghri/i-have-adhd](https://github.com/ayghri/i-have-adhd)).
 
-**Outside the flow:** `writing-specs` establishes a project's living spec;
+**Outside the flow:** `writing-specs` establishes a project's living spec
+(`spec.md` = current state, `decisions.md` beside it = why) and migrates
+old specs that still hold a decision table;
 `knowledge-transfer` (kept private, outside this repo) packages handovers,
 reviewed by the `kt-cold-reader`
 agent.

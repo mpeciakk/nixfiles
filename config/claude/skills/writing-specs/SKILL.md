@@ -1,233 +1,205 @@
 ---
 name: writing-specs
-description: Use when a project has no living spec and needs one — a new project starting from an idea, or existing code whose purpose, decisions and open questions live only in someone's head. Triggers on "napisz spec", "stwórz spec.md", "zbierz wymagania", "write a spec for this project", "co ten projekt właściwie robi", and on reaching a project with no spec at the start of pipeline work, or an existing spec has passed 40 KB and needs splitting into docs/. Otherwise this skill does not amend an existing spec — writing-plans does that per change.
+description: Use when a project has no living spec and needs one — a new project starting from an idea, or existing code whose purpose and behaviour live only in someone's head. Triggers on "napisz spec", "stwórz spec.md", "zbierz wymagania", "write a spec for this project", "co ten projekt właściwie robi", on reaching a project with no spec at the start of pipeline work, on a spec past 40 KB that needs splitting, and on a spec still holding a decision table (`| D1 |` rows) that must be migrated before a change adds or changes a decision. Otherwise this skill does not amend an existing spec — writing-plans and executing-plans do that per change.
 ---
 
 # Writing Specs
 
-A living spec states what a project **is right now**: its purpose, scope,
-architecture, the decisions in force, and what is still open. It is written once
-per project and then kept true by every change that touches it.
+A living spec states what a project **is right now** — precisely enough that
+a fresh session told "zaimplementuj spec.md" builds a project that behaves the
+same, and its Weryfikacja section proves it. Why things are the way they are
+lives next to it, in `decisions.md`. Written once per project, then kept true
+by every change.
 
-This is a bootstrap job — one document, one sitting, its own user gate; a
-split also ends at its own user gate, where the user approves the topic
-grouping before the commit. It is not a stage of the pipeline and it opens no
-run state; a change to *code* comes afterwards, through development-workflow
-as usual.
+This is a bootstrap job — one document, one sitting, its own user gate. It
+opens no run state; a change to *code* comes afterwards, through
+development-workflow as usual.
+
+## Two files
+
+- **`spec.md`** — current state only. Read in full before every change.
+- **`decisions.md`** — in the same directory as `spec.md` (a per-component
+  spec gets its own, with its own numbering). An append-only log of why. Never
+  read whole by default: grep it for a number when a change touches a section
+  that cites `(Dn)`, or wants to change that decision.
+
+Test for every line of the spec: *does an implementer need this to build the
+same thing?* No → it goes to `decisions.md` (rationale, rejected options),
+to git (history, "we changed X"), or nowhere.
 
 ## Two readers, and only one of them can ask
 
-The spec is a hybrid document. A person reads it weeks later, having forgotten;
-an agent reads it to build from, often in a fresh session after `/clear`, and
-**fills a gap instead of asking**. Mostly they want the same thing. Where they
-diverge, the agent's constraints decide — its failure mode is worse.
+A person reads the spec weeks later, having forgotten; an agent reads it to
+build from, in a fresh session, and **fills a gap instead of asking**. Where
+they diverge, the agent's constraints decide.
 
-| | The person | The agent |
-|---|---|---|
-| reads it | selectively, to re-orient | in full, on every task, paying context per line |
-| meets a gap by | asking you, or using judgment | inventing an answer and committing it |
-| reads "about 10 seconds" as | fine, roughly ten | `timeout=10` or `timeout=10000`, a coin flip |
-| needs | the why, the shape, enough to disagree | exact values, one interpretation, stable anchors to cite |
-
-What follows from that:
-
-- **Exact values, verbatim.** Numbers with units, identifiers spelled as in code,
-  user-facing strings in quotes. "A friendly error message" is not a requirement;
-  `"Nie udało się zapisać — spróbuj ponownie"` is.
-- **One interpretation per sentence.** For the person, ambiguity is a matter of
-  style; for the agent it is a coin flip that ends up in a commit. If a sentence
-  admits two readings, pick one and write it — or move it to the open points and
-  say what would settle it.
-- **Number the sections and keep the numbers stable.** Both readers cite them
-  ("§5.2", "D14"); silent renumbering breaks every reference in plans, briefs and
-  commit messages.
+- **Exact values, verbatim.** Numbers with units, identifiers spelled as in
+  code, user-facing strings in quotes. "A friendly error message" is not a
+  requirement; `"Nie udało się zapisać — spróbuj ponownie"` is.
+- **One interpretation per sentence.** If a sentence admits two readings, pick
+  one — or move it to the open points with what would settle it.
+- **Behaviour by example.** A rule plus an input → result example beats a
+  paragraph; point it at the test or command that checks it.
+- **Stable numbers.** Sections (§5.2) and decisions (D14) are cited by plans
+  and commits; never renumber.
 - **Cite code by path and symbol, never by line.** `src/harmonia/store.py`
-  (`pool_upsert`) rather than `store.py:104-106`. Line numbers go stale with the
-  next unrelated edit and turn every spec sync into a citation hunt. harmonia's
-  spec carried 411 of them.
-- **Rationale earns its place.** The "why" behind a decision is what stops either
-  reader reopening it — the one kind of prose that pays for itself with both.
-- **Nothing purely decorative.** A paragraph that motivates but decides nothing
-  costs the person a minute and the agent context on every single task.
+  (`pool_upsert`), not `store.py:104-106`.
 
-## Match the house, do not invent a structure
+## The skeleton
 
-**Read a sibling spec before writing a line.** Other projects here already have
-one (`~/work/*/spec.md`, `~/projects/*/spec.md`, sometimes per component:
-`agent/spec.md`, `webui/spec.md`). Open the closest relative — same stack, same
-author, similar size — and follow its shape.
+Polish unless the project's own artifacts are English. Numbered `## N.`
+headings. The middle (sections 3–5) is project-shaped: read a sibling spec
+(`~/work/*/spec.md`, `~/projects/*/spec.md`) for how this house names them.
 
-What is already consistent across them, and what you therefore keep:
+```markdown
+# <Projekt>
 
-- **Polish**, unless the project's own artifacts are English
-- Numbered `## N. Section` headings
-- Opens with the purpose (`## 1. Cel`, `## 1. Czym jest X`)
-- **Closes with open points** — every spec here has that section; use the name
-  the sibling uses ("Punkty otwarte", "Otwarte kwestie i flagi", "Otwarte
-  decyzje"), do not introduce an eighth name for it. Two different things end up
-  there and the existing headings each name only one: **unanswered questions**
-  (someone must decide) and **flags** (a known risk nobody has to decide today).
-  If you have both, give them subsections under that heading rather than
-  overloading it — one spec here already splits them into non-blocking versus
-  gates-before-production, which is the distinction that matters
-- The middle is entirely project-shaped: architecture, data model, protocol,
-  stack, configuration, security, whatever this project actually has
+## 1. Cel i zakres
+Problem, użytkownik, co projekt robi — 2–5 zdań.
 
-A new structure invented per project is why one section already answers to seven
-different names. Invent only when there is genuinely no sibling to copy.
+## 2. Poza zakresem
+Czego implementator NIE buduje.
 
-**Decisions in force** are the part most worth getting right: what was chosen,
-and *why*, so a later reader does not reopen a settled question. One project here
-keeps them in a numbered table with a rationale column, which is the strongest
-form and worth proposing; most keep them inside the section they govern. Either
-is fine, as long as the rationale survives.
+## 3. Zachowanie
+Per funkcja: reguły + przykłady wejście → wynik, każdy wskazuje test
+(`tests/x.py::nazwa`) albo komendę. Decyzja, która coś tu ogranicza: „(D7)”.
+
+## 4. Kontrakty zewnętrzne
+CLI, formaty plików, API, schematy, zmienne środowiskowe, porty — dokładnie;
+link do pliku schematu zamiast przepisywania go.
+
+## 5. Architektura
+Tylko to, czego nie widać z drzewa katalogów w minutę: komponenty, przepływ
+danych, gdzie co działa.
+
+## 6. Inwarianty i ograniczenia
+Co zawsze/nigdy musi być prawdą: bezpieczeństwo, dane, limity.
+
+## 7. Punkty otwarte
+### Pytania — ktoś musi zdecydować; z domyślną odpowiedzią.
+### Flagi — znane ryzyko, nikt nie musi decydować dziś.
+
+## 8. Weryfikacja
+Dokładne komendy, które pokazują, że projekt działa jak opisano.
+```
+
+A section the project lacks is omitted, not left empty. An open point that
+gets settled is deleted from §7 — the settlement, if it is a decision, becomes
+a D entry.
+
+## decisions.md
+
+```markdown
+# Decyzje — <Projekt>
+
+## D7 — SQLite zamiast Postgresa (2026-11-21) · przyjęta
+Kontekst: jeden użytkownik, sync pc↔laptop, bez serwera.
+Decyzja: stan w jednym pliku SQLite.
+Odrzucone: Postgres (koszt utrzymania), pliki JSON (brak transakcji).
+Konsekwencje: zero ops; brak współbieżnych zapisów.
+```
+
+- 3–10 lines per entry; numbers continue the project's existing D sequence.
+- Status: `przyjęta`, `zastąpiona przez Dn`, `zmieniona przez Dn (<zakres>)`,
+  `uchylona przez Dn`. Changing a decision = a new entry + editing the old
+  entry's status line; the old entry's text is never rewritten.
+- Only decisions a later reader might reopen: a choice between real options.
+  What the code plainly shows needs no entry.
 
 ## Draft first, then grill
 
-Do not open with a questionnaire. Fifteen questions in a vacuum produce "nie
-wiem" for half of them — including the ones the code already answers.
+Do not open with a questionnaire — half the answers are in the code.
 
-1. **Build a strawman.** For existing code: read it first (the directory
-   layout, then grep and Read for the parts that matter), plus the README, the config, the dependency manifest, and the commit
-   history — intent is often clearer in commit messages than in code. For a
-   greenfield project: the strawman comes from the user's opening description and
-   from how their other projects are built.
-2. **Show it and say what you guessed.** Mark every inference explicitly. The
-   user corrects a concrete draft far faster than they answer abstract questions,
-   and a wrong guess in front of them is worth more than a right question.
-3. **Then grill only the gaps** — one question at a time, each with your
-   recommended default so a nod is a complete answer. Ask about intent,
-   constraints, non-functional requirements and scope boundaries: the things no
-   amount of code reading can tell you. **REQUIRED BACKGROUND:** the grill
-   protocol at `~/.claude/skills/writing-plans/grill-gate.md` (a reference file,
-   not a skill — read it directly) — apply it to the decisions this spec is about
-   to record, and stay silent where nothing is genuinely open.
+1. **Build a strawman.** Existing code: the directory layout, then grep and
+   Read for the parts that matter, plus README, config, dependency manifest
+   and commit history. Greenfield: the user's description and how their other
+   projects are built.
+2. **Show it and say what you guessed.** Mark every inference.
+3. **Grill only the gaps**, per `~/.claude/skills/writing-plans/grill-gate.md`
+   (a reference file — read it directly). Push every answer to an exact
+   value; "kilka sekund" is not an answer. Not known yet → an open point with
+   a stated default, never your rounding.
+4. **Assumptions stay assumptions:** a numbered list in §7, and reconstructed
+   rationale in `decisions.md` marked `(wnioskowane)`.
 
-   **Push every answer to an exact value.** "Kilka sekund", "raczej szybko",
-   "jakiś rozsądny limit" are not answers — ask for the number, the string, the
-   name. If the user genuinely does not know yet, that is an open point with a
-   stated default, not something for you to round off: whoever builds from it
-   will turn your rounding into a constant.
-4. **Write assumptions down as assumptions.** Anything you could not confirm goes
-   in its own numbered list, not smuggled into prose as fact. An auditable
-   assumption gets corrected later; a buried one becomes folklore. The same
-   applies to rationale you reconstructed rather than were told: on old code the
-   "why" is often gone, so mark those `(wnioskowane)` instead of asserting a
-   motive the author never stated.
-
-**If the user is unavailable** — an agent running this alone, or "just do it" —
-you do not get to answer for them. Record each question you would have asked in
-the open points, with your recommended default, and say in the handoff that the
-spec is provisional until those are settled.
+**User unavailable** ("just do it", an agent alone): you do not answer for
+them. Each question goes to §7 with your default; say the spec is provisional.
 
 ## Scale to the project
 
-The spec's job is to be read. Length follows the project, not ambition.
-
-| Project | Descriptive body |
+| Project | spec.md |
 |---|---|
 | A single-purpose tool, one service, a hobby repo | 60–150 lines |
 | A real application with a data model and integrations | 150–350 lines |
-| A system with external contracts, auth, several components | 350+, and consider one spec per component |
+| A system with external contracts, auth, several components | 350+, consider one spec per component |
 
-The bands cover the part that **describes** the project. Open points, recorded
-questions and the assumptions list are additive and do not compete with them: on
-a legacy project the unknowns can legitimately outweigh the facts, and cutting
-them to hit a line count would mean silently answering questions the user has not
-answered. Overshoot and say why, rather than deciding something to look concise.
-
-A 300-line description of a 20-file project is a document nobody will maintain,
-and an unmaintained spec is worse than none: it lies with authority.
-
-40 KB, not the line count, is what triggers a split — see
-`## Splitting a spec past 40 KB` below.
+Open points may overshoot on a legacy project — say why rather than silently
+answering questions the user has not answered. A spec longer than the code
+deserves is a document nobody maintains, and an unmaintained spec lies with
+authority.
 
 ## Splitting a spec past 40 KB
 
-**When:** any spec file (`spec.md` or a topic file) over 40 KB by `wc -c`.
+Any spec file over 40 KB by `wc -c`: the agent reads it in full on every
+task (harmonia's 302 KB spec made spec-sync tasks 3–5× the cost of a code task).
 
-**Why:** the agent reads the spec in full on every task that touches it.
-harmonia's 302 KB spec ran spec-sync tasks at 330–342K context, 3–5× the cost
-of a code task.
+- `spec.md` becomes the index: §1, §2, and one line per `docs/<temat>.md`
+  with what it holds and its section numbers.
+- Group topics by what one change reads together. A topic file over 40 KB
+  splits again; a single section over 40 KB splits at its `###` headings.
+- Numbering stays global: a moved §7 stays §7. `decisions.md` is not split.
+- Its own commit; content is moved, not rewritten, except `file:line`
+  citations converted to path + symbol.
 
-**Shape:** `spec.md` becomes the index.
+A split spec is read as the index plus the topic files the change touches.
 
-- It holds `Cel`, `Zakres`, and one line per `docs/<topic>.md`: the path, what
-  the file holds, its section numbers and its D numbers.
-- It also holds the next free D number.
-- It keeps the headings of the decision and open-points sections as pointers
-  to where their rows went.
+## Migrating a spec with a decision table
 
-**Decisions and open points:** the decision table and the open-points section
-are dissolved. Each D row and each open point moves, with its number, to the
-topic file that holds the section it governs. A row that governs several
-topics goes with its primary section and is linked from the others. The
-reason: one `decisions.md` would put 72 KB in front of every plan gate.
+A spec still holding `| D1 |` rows (or D rows spread over topic files) is on
+the old model. Before any change adds or changes a decision, migrate it — one
+commit, nothing else in it:
 
-**Numbering stays global:** a moved §7 stays §7, and D numbers continue one
-sequence. Whoever adds a D row or a section updates the index's next free D
-number and that file's line in the same commit.
+1. For each D row: the **current value** it fixes goes into the state section
+   it governs, with `(Dn)` cited there; the **rationale, rejected options,
+   author** go to `decisions.md` as entry Dn — only what the row had, nothing
+   invented.
+2. Rows that say "zmienione przez", "uchylone przez", "pierwotnie…": the old
+   entry gets the matching status, the newer entry carries the current value.
+3. Delete the decision table, the "next free D" line, index lines listing D
+   numbers, changelog preambles, and struck/dated open points.
+4. An existing `decisions.md` in another format: its entries stay as they
+   are; new entries follow the format above, continuing the numbering.
+5. Replace the project `CLAUDE.md` block with the one from
+   `project-claude-md.md`.
+6. Check: every value from the old rows is findable in the new spec
+   (`grep` a sample of 10), and `wc -c` before/after.
 
-**Choosing topics:** group by what one change reads together, not by heading
-order.
+## What does not belong in the spec
 
-- A topic file that would pass 40 KB splits again.
-- A single section over 40 KB splits at its `###` headings.
-- A section with no `###` headings stays alone in its own file, and the index
-  flags it as over the limit.
-
-**The act:** its own commit. Content is moved, not rewritten, with one
-exception: `file:line` citations are converted to path + symbol. Every
-section except the dissolved two lands in exactly one file, and so does
-every D row.
-
-**Scope:** this is a writing-specs job, never a side effect of a feature
-change.
-
-## What does not belong in it
-
-The spec says what **is**. Anything that would become false next week without
-anyone deciding anything belongs elsewhere:
-
-- **Defect lists, TODOs, known bugs** → issues, or a `Znane problemy` line at
-  most. A spec is not a bug tracker.
-- **Task breakdowns, phases, "definition of done"** → writing-plans owns those,
-  per change.
-- **Code** → beyond the odd contract snippet (a schema, an event shape, a config
-  key), the code is the code.
-
-Test each line before you keep it: *would this need a decision to change?* If
-yes, it is spec. If it merely needs someone to fix something, it is not.
+- Rationale, rejected options, history, changelog → `decisions.md` or git.
+- Defect lists, TODOs, known bugs → issues.
+- Task breakdowns, phases, "definition of done" → writing-plans.
+- Code beyond the odd contract snippet.
 
 ## Finishing
 
-Put the file where the code it describes lives: project root for a single
-codebase, next to the component in a monorepo. Commit it on its own — this is a
-documentation act and should be reviewable as one. If you cannot write into the
-repository at all (read-only checkout, no permission), say so, write it where you
-can, and state in the handoff where it belongs — do not silently drop the
-placement decision.
+Put `spec.md` where the code it describes lives: project root for a single
+codebase, next to the component in a monorepo; `decisions.md` beside it.
+Commit both on their own, with the project `CLAUDE.md` block from
+`project-claude-md.md` (next to this file) — without it, a colleague's Claude
+Code never learns the spec exists. Cannot write into the repository: say so,
+write it where you can, and state where it belongs.
 
-In the same commit, add the project `CLAUDE.md` block from
-`project-claude-md.md` (next to this file). Without it, a colleague's Claude Code
-never learns the spec exists.
-
-Then hand it to the user and say plainly which parts are their answers, which are
-your inferences from the code, and which questions stayed open. Point out that
-from here on the spec is kept true by the pipeline: decisions land at the plan
-gate, state sections get updated after the run's last task, before the branch
-review.
+Hand it to the user: which parts are their answers, which are your inferences,
+which questions stayed open. From here the pipeline keeps it true: a change's
+decisions and state sections land together with its code.
 
 ## Red flags
 
-- Asking questions before reading the code. The answers are half in there.
-- A structure that matches none of the project's siblings.
-- "TBD" or an empty section left in the delivered document — either the question
-  is open (say so in the open points, with what would settle it) or it is not.
-- A spec longer than the code deserves.
-- "Około", "roughly", "jakiś", "odpowiedni", "w miarę" surviving into the
-  delivered document. Each one is a decision you left for a subagent to make
-  silently.
+- Asking questions before reading the code.
+- Rationale, "pierwotnie", "zmienione przez" or dates in the spec body.
+- "TBD" or an empty section in the delivered document.
+- "Około", "roughly", "jakiś", "odpowiedni", "w miarę" surviving — each one is
+  a decision left for a subagent to make silently.
 - Writing it as a plan: phases, tasks, checkboxes, estimates.
-- Quietly resolving something the user has not decided. An open question stated
-  as an open question is a finished spec; an invented answer is a broken one.
+- Quietly resolving something the user has not decided.

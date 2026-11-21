@@ -55,7 +55,8 @@ Then the next task, without checking in.
   user sees every ruling at finish.
 - It changes the scope or a spec decision, or is irreversible (data, external
   side effects, security): the user's call. Show the plan line and the
-  evidence.
+  evidence; the user's answer goes under `## Rulings` the same way and
+  reaches `decisions.md` with the rest.
 
 Stop only for a conflict that is the user's call, a blocker you cannot
 resolve (`flow-state task N blocked "<why>"`, then the user), the context
@@ -63,13 +64,20 @@ check, or the end of the plan.
 
 ## After the last task
 
-1. **Spec state.** Bring the living spec up to date (`flow-state get spec`).
-   The decision rows went in at the plan gate; the sections describing state —
-   architecture, data model, API, documented behaviour — change now, for every
-   section this branch made untrue. Cite code by path and symbol, commit on
-   the branch. Nothing touched the spec's claims: say so in one line.
+1. **Spec and decisions.** (`flow-state get spec`; none: skip.) In one
+   commit on the branch:
+   - `decisions.md` beside the spec: one entry per plan decision and per
+     ruling that changed a decision (format: writing-specs). Number from the
+     last `## D` on the base branch (`git show <base-branch>:<path>`); a
+     clash with work merged meanwhile → renumber and fix the citations. A
+     reversed Dn gets its status line changed, not its text.
+   - The spec: every section this branch made untrue now describes the code,
+     citing `(Dn)` where a decision constrains it; open points the branch
+     settled are deleted. Cite code by path and symbol.
+   Nothing touched the spec's claims or decisions: say so in one line.
 2. **Branch review:** requesting-code-review. Pass it the plan path, `base`
-   from the run state, HEAD, and the spec sections you updated. Act on it per
+   from the run state, HEAD, the spec sections you updated and the D entries
+   you added or changed. Act on it per
    that skill — each round goes into the ledger — then record the review
    closed:
 
