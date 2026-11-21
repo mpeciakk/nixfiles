@@ -27,9 +27,9 @@ the gist of, and review. None of them writes in this tree.
 ## Per task
 
 1. **Record:** `~/.claude/hooks/flow-state task N started`.
-2. **Read** the task — Outcome, Acceptance, Area, Context — and everything
-   above the first task in the plan: its Decisions and Constraints bind every
-   task. Then the Area's code, by range.
+2. **Read** the task — Outcome, Acceptance, Area, Context — everything
+   above the first task in the plan, and its `## Rulings`: Decisions,
+   Constraints and Rulings bind every task. Then the Area's code, by range.
 3. **Build** it in the task's Area. Tests per CLAUDE.md "Code" (traps:
    [writing-good-tests.md](writing-good-tests.md)); anything unexpected per
    systematic-debugging.
@@ -66,8 +66,9 @@ check, or the end of the plan.
 
 1. **Spec and decisions.** (`flow-state get spec`; none: skip.) In one
    commit on the branch:
-   - `decisions.md` beside the spec: one entry per plan decision and per
-     ruling that changed a decision (format: writing-specs). Number from the
+   - `decisions.md` beside the spec: one entry per plan decision, in its
+     final form — a ruling that changed it during the run changes the entry,
+     not a second one (format: writing-specs). Number from the
      last `## D` on the base branch (`git show <base-branch>:<path>`); a
      clash with work merged meanwhile → renumber and fix the citations. A
      reversed Dn gets its status line changed, not its text.

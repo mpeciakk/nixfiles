@@ -1,6 +1,6 @@
 ---
 name: writing-specs
-description: Use when a project has no living spec and needs one — a new project starting from an idea, or existing code whose purpose and behaviour live only in someone's head. Triggers on "napisz spec", "stwórz spec.md", "zbierz wymagania", "write a spec for this project", "co ten projekt właściwie robi", on reaching a project with no spec at the start of pipeline work, on a spec past 40 KB that needs splitting, and on a spec still holding a decision table (`| D1 |` rows) that must be migrated before a change adds or changes a decision. Otherwise this skill does not amend an existing spec — writing-plans and executing-plans do that per change.
+description: Use when a project has no living spec and needs one — a new project starting from an idea, or existing code whose purpose and behaviour live only in someone's head. Triggers on "napisz spec", "stwórz spec.md", "zbierz wymagania", "write a spec for this project", "co ten projekt właściwie robi", on reaching a project with no spec at the start of pipeline work, on a spec past 40 KB that needs splitting, and on a spec still holding a decision table (`| D1 |` rows) that must be migrated before a change adds or changes a decision. Otherwise this skill does not amend an existing spec — each change does, with its code (executing-plans in a run).
 ---
 
 # Writing Specs
@@ -161,7 +161,8 @@ commit, nothing else in it:
 
 1. For each D row: the **current value** it fixes goes into the state section
    it governs, with `(Dn)` cited there; the **rationale, rejected options,
-   author** go to `decisions.md` as entry Dn — only what the row had, nothing
+   author** go to `decisions.md` as entry Dn — the row's own wording, fields
+   it lacked omitted, its date or none, the author in Kontekst. Nothing
    invented.
 2. Rows that say "zmienione przez", "uchylone przez", "pierwotnie…": the old
    entry gets the matching status, the newer entry carries the current value.
@@ -173,6 +174,9 @@ commit, nothing else in it:
    `project-claude-md.md`.
 6. Check: every value from the old rows is findable in the new spec
    (`grep` a sample of 10), and `wc -c` before/after.
+
+A migration is mechanical: no user gate — report the check. Inside inline
+work, commit it before noting the change's review BASE.
 
 ## What does not belong in the spec
 

@@ -54,7 +54,7 @@ One sentence. Spec: <path to the living spec> (omit if the project has none).
 
 ## Decisions
 - D<n> <decision> — <why>. Rejected: <alternative> (<why not>).
-  (n continues after the last `## D` in the spec's decisions.md.)
+  (n continues after the last `## D` in the spec's decisions.md; none yet: D1.)
 
 ## Constraints
 Project-wide requirements a task must not break, one line each, values
@@ -96,7 +96,8 @@ plan; only a real call checks the plan against reality.
 Nothing goes into the spec or `decisions.md` at the gate: until the code
 exists, the plan's Decisions section is the record. After the last task,
 executing-plans writes the decisions and the state sections together, in one
-commit with the code they describe. A decision that reverses an existing Dn
+commit on the branch, before the branch review. (A provided spec, §1, is the
+exception: it is the design, and its gaps are folded in before planning.) A decision that reverses an existing Dn
 says so in its line (`reverses D36`).
 
 No living spec: the plan's Decisions section is the record; offer

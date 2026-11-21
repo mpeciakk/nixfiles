@@ -87,7 +87,8 @@ confinement — skip this if that's what you're in.
 MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
 cd "$MAIN_ROOT"
 git checkout <base-branch> && git pull   # skip the pull with no remote
-git merge <feature-branch>
+git merge <feature-branch>   # conflict in decisions.md (both sides added the same Dn):
+                                # renumber the branch's entries after main's last, fix their (Dn) in the spec, commit
 <test command>                     # only if the merge was not a fast-forward
 git push origin <base-branch>      # only if a remote exists
 git push origin --delete <feature-branch>   # only if it was pushed
