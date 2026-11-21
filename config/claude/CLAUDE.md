@@ -103,8 +103,9 @@ While writing:
 - No abstraction with one caller, no unrequested option, config, wrapper,
   type conversion or "for later" code, no handling of impossible cases.
 - Never write the same logic twice: a second copy of a block, validation or
-  query with the same purpose calls or extends the first (display ≠ export). Near-copies already there:
-  merge them only when your fix would otherwise go into each; else report.
+  query with the same purpose calls or extends the first (display ≠ export).
+  Near-copies already there: merge them only when your fix would otherwise go
+  into each; else report.
 - Between two options of equal size, take the one correct at the edges (empty,
   zero, last item, rounding, time zones).
 - Code you move or merge keeps its validation and error handling.
