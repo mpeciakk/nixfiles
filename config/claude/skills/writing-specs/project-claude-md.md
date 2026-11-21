@@ -19,7 +19,7 @@ file exists, add the block as its own sections and leave the rest untouched.
   the whole `.flow/` section if there is none.
 - Polish, unless the spec is in English — then translate the block.
 
-Keep it under 30 lines: every session in the project pays for it.
+At most 30 lines: every session in the project pays for it.
 
 ## The block
 
@@ -31,8 +31,8 @@ inwarianty, punkty otwarte i jak to zweryfikować. Przeczytaj go w całości
 przed zmianą i zanim zapytasz użytkownika o coś, co spec może rozstrzygać.
 `decisions.md` obok niego to log decyzji: dlaczego tak, co odrzucono.
 
-- Zmiana zachowania opisanego w specu aktualizuje spec w tym samym commicie
-  co kod. Nieaktualny spec szkodzi bardziej niż brak speca.
+- Zmiana zachowania opisanego w specu aktualizuje spec razem z kodem (w runie:
+  jednym commitem po ostatnim tasku); nieaktualny spec szkodzi bardziej niż brak.
 - „(D7)” w specu odsyła do wpisu w `decisions.md` — przeczytaj go, zanim
   zmienisz to miejsce. Zmianę sprzeczną z decyzją najpierw uzgodnij
   z użytkownikiem, potem dopisz nowy wpis (następny numer po ostatnim

@@ -30,8 +30,9 @@ Workflow rules:
    now) BEFORE asking me questions; `decisions.md` beside it holds the why. A
    change's decisions and the spec sections it made untrue land with its code.
    Fix or delete any spec sentence that contradicts the code. A spec still
-   holding a decision table → migrate it (`writing-specs`) before a change
-   adds or changes a decision. No spec → separate job (`writing-specs`).
+   holding a decision table → before a change adds or changes a decision,
+   migrate it (`writing-specs`, own commit, before noting BASE), whatever the
+   project CLAUDE.md says. No spec → separate job (`writing-specs`).
 7. Call the advisor only: once per run, before the plan is approved; when the
    same error returns after 2 fix attempts; before an irreversible or
    outward-facing action.
@@ -69,12 +70,11 @@ I ask — I talk to them.
 ## Code
 
 Be lazy about the solution, never about the change: the least new code that
-fully solves the problem, plus every caller, test and fixture it breaks. A
-trivial change (typo, one line): common sense.
+fully solves it, plus the callers, tests and fixtures it breaks. Typo: no rules.
 
 Before writing:
-- Turn the task into a checkable goal. "Done" is a check you did not write in
-  this change: the existing suite, a test that fails before the bug fix, one
+- Turn the task into a checkable goal. "Done" is checked against something you
+  did not invent: the existing suite, a test that fails before the bug fix, one
   focused test per plan acceptance line or behaviour I stated — then the real
   thing run, not only the suite.
 - Test-first only for a bug fix. A test names the bug it catches, not a
@@ -85,7 +85,7 @@ Before writing:
 - List every place the change must reach (callers, tests, fixtures, config,
   exports) and what it can break (data destroyed or exposed, callers).
 - Before writing a function, grep for one that already does the job — by
-  what it does (the format, the check, the query), not only by its name.
+  what it does (the check, the query, the conversion), not only by its name.
 - Bug fix: grep every caller of the function you touch and fix the root cause
   once, in the shared code — not in one of the callers.
 
@@ -102,8 +102,8 @@ Choosing the solution — take the first option that fully works:
 While writing:
 - No abstraction with one caller, no unrequested option, config, wrapper,
   type conversion or "for later" code, no handling of impossible cases.
-- Never write the same logic twice: a second copy of a block, format,
-  validation or query calls or extends the first. Near-copies already there:
+- Never write the same logic twice: a second copy of a block, validation or
+  query with the same purpose calls or extends the first (display ≠ export). Near-copies already there:
   merge them only when your fix would otherwise go into each; else report.
 - Between two options of equal size, take the one correct at the edges (empty,
   zero, last item, rounding, time zones).

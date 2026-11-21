@@ -59,8 +59,8 @@ Untracked artifacts from these runs are fine; changes to tracked files are not.
 - **Spec and decisions.** Does the code still honour every decision the change
   touches — the D numbers you were given and every `(Dn)` cited in the spec
   sections the diff's code is described in (read those entries in
-  `decisions.md`)? A decision reversed without a new entry there, and the old
-  entry's status changed, is Critical, however reasonable the new behaviour
+  `decisions.md`)? A decision reversed without both a new entry there and the old
+  entry's status line changed is Critical, however reasonable the new behaviour
   looks. Spec sections the
   change made untrue must describe the code as it now is, with no rationale or
   history in them.

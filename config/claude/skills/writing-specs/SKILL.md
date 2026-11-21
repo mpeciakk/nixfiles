@@ -95,13 +95,16 @@ a D entry.
 ## D7 — SQLite zamiast Postgresa (2026-11-21) · przyjęta
 Kontekst: jeden użytkownik, sync pc↔laptop, bez serwera.
 Decyzja: stan w jednym pliku SQLite.
+Dlaczego: zero utrzymania; transakcje.
 Odrzucone: Postgres (koszt utrzymania), pliki JSON (brak transakcji).
-Konsekwencje: zero ops; brak współbieżnych zapisów.
+Konsekwencje: brak współbieżnych zapisów.
+Źródło: Maciej, plan 2026-11-21-storage.
 ```
 
-- 3–10 lines per entry; numbers continue the project's existing D sequence.
+- At most 10 lines per entry; a field with nothing to say is omitted.
+  Numbers continue the project's existing D sequence.
 - Status: `przyjęta`, `zastąpiona przez Dn`, `zmieniona przez Dn (<zakres>)`,
-  `uchylona przez Dn`. Changing a decision = a new entry + editing the old
+  `uchylona przez Dn`; several changers → comma-joined. Changing a decision = a new entry + editing the old
   entry's status line; the old entry's text is never rewritten.
 - Only decisions a later reader might reopen: a choice between real options.
   What the code plainly shows needs no entry.
@@ -159,15 +162,20 @@ A spec still holding `| D1 |` rows (or D rows spread over topic files) is on
 the old model. Before any change adds or changes a decision, migrate it — one
 commit, nothing else in it:
 
-1. For each D row: the **current value** it fixes goes into the state section
-   it governs, with `(Dn)` cited there; the **rationale, rejected options,
-   author** go to `decisions.md` as entry Dn — the row's own wording, fields
-   it lacked omitted, its date or none, the author in Kontekst. Nothing
+1. Every D row becomes entry Dn, reopenable or not: the **current value** it
+   fixes goes into the state section it governs, with `(Dn)` cited there; the
+   rationale, rejected options and author go into the entry's fields — the
+   row's own wording, its date or none, fields it lacked omitted. Text from
+   deleted open points that framed the decision may go into Kontekst. Nothing
    invented.
 2. Rows that say "zmienione przez", "uchylone przez", "pierwotnie…": the old
    entry gets the matching status, the newer entry carries the current value.
 3. Delete the decision table, the "next free D" line, index lines listing D
-   numbers, changelog preambles, and struck/dated open points.
+   numbers, changelog preambles, and struck/dated open points. In the body,
+   history and rationale ("pierwotnie", "od runu 3", "bo …") move to the
+   matching entry or go; a measured fact keeps its date. Keep the spec's
+   section layout (the skeleton is for new specs); a removed section leaves
+   its number unused.
 4. An existing `decisions.md` in another format: its entries stay as they
    are; new entries follow the format above, continuing the numbering.
 5. Replace the project `CLAUDE.md` block with the one from
