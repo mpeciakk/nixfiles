@@ -18,6 +18,10 @@
       bun
       uv
       lazydocker
+      # language servers for Claude Code's typescript-lsp and pyright-lsp plugins
+      typescript-language-server
+      typescript
+      pyright
     ];
 
     xdg.config.files."uv/uv.toml".text = ''
