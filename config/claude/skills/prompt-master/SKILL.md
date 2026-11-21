@@ -1,6 +1,7 @@
 ---
 name: prompt-master
 version: 1.7.0
+disable-model-invocation: true
 description: Use when the user explicitly asks to write, fix, improve or adapt a prompt for a specific AI tool (LLM, Cursor, Midjourney, image or video AI, coding agents). Not for coding or document writing.
 ---
 
