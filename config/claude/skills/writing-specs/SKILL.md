@@ -98,7 +98,7 @@ Decyzja: stan w jednym pliku SQLite.
 Dlaczego: zero utrzymania; transakcje.
 Odrzucone: Postgres (koszt utrzymania), pliki JSON (brak transakcji).
 Konsekwencje: brak współbieżnych zapisów.
-Źródło: Maciej, plan 2026-11-21-storage.
+Źródło: użytkownik, plan 2026-11-21-storage.
 ```
 
 - At most 10 lines per entry; a field with nothing to say is omitted.

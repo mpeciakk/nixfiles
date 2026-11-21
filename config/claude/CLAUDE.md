@@ -70,7 +70,7 @@ I ask — I talk to them.
 ## Code
 
 Be lazy about the solution, never about the change: the least new code that
-fully solves it, plus the callers, tests and fixtures it breaks. Typo: no rules.
+fully solves it, plus everything it breaks. Typo or one line: common sense.
 
 Before writing:
 - Turn the task into a checkable goal. "Done" is checked against something you
