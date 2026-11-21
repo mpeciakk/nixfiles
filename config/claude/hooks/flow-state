@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Pipeline run state — one file per repository, read by skills and hooks.
 
-Conversation memory does not survive compaction, so the run's paths live here
-and the hooks enforce the pipeline's gates from this file.
+Conversation memory does not survive compaction, so the run's paths live here.
+The hooks read it to keep one workspace per run, protect it from hand edits and
+refuse polling for subagents; the user gates (✋) are not enforced.
 
 Location: `<main-worktree>/.flow/run/state.json`, resolved from `git worktree
 list` so the main checkout and every linked worktree — including one created
@@ -22,7 +23,7 @@ Fields: task stage spec plan worktree branch base
 Literals, resolved against --cwd/cwd: `worktree=.` (toplevel), `branch=.`
 (current branch), `base=HEAD` (SHA); in a task note `base=HEAD` and
 `fixbase=HEAD` are stored as the SHA.
-Stages: triage design plan isolate implement inline finish
+Stages: triage plan isolate implement inline finish
 
 Three orderings are enforced, because a stage that accepts any predecessor
 tracks nothing: `implement` needs a recorded `plan` and `worktree`, and
@@ -37,7 +38,7 @@ import subprocess
 import sys
 
 FIELDS = ("task", "stage", "spec", "plan", "worktree", "branch", "base")
-STAGES = ("triage", "design", "plan", "isolate", "implement", "inline", "finish")
+STAGES = ("triage", "plan", "isolate", "implement", "inline", "finish")
 LIVE_KEYS = ("worktree", "plan", "spec", "tasks")
 # The status line and flow-context match on these, so an unknown status would
 # read as "no progress"; `complete` is the older skill wording, kept as an alias.

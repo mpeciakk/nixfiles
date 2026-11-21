@@ -40,10 +40,8 @@ branch split from main — correct?"
 
 ## Step 4 — present the options, without commentary
 
-Read the plan before Step 5 leaves the worktree: its worktree copy
-(`<worktree>/.flow/plans/<plan basename>`) if `.flow/plans` is tracked
-(`git check-ignore -q .flow/plans` fails), else the file `flow-state get plan`
-names. If it has a `## Rulings` section, list its lines first, in the reply —
+Read the plan before Step 5 leaves the worktree (where its copy lives:
+executing-plans, "Plan conflict"). If it has a `## Rulings` section, list its lines first, in the reply —
 decisions you made during the run that the user has not seen yet.
 
 Then ask with the `AskUserQuestion` tool, not as a question typed in the chat.

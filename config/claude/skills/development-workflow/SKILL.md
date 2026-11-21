@@ -40,9 +40,8 @@ The run lives in a file, not in your memory:
 ```
 
 One file per repository (`<main-checkout>/.flow/run/state.json`), shared by
-every worktree. On "kontynuuj", after `/clear` or after compaction: `flow-state show` and
-`git log` over recollection — re-enter the recorded worktree, resume at the
-first task not marked done.
+every worktree. Resuming ("kontynuuj", after `/clear` or compaction):
+executing-plans.
 
 ## Rules
 

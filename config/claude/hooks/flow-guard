@@ -199,7 +199,7 @@ def main():
 
     tool = payload.get("tool_name")
     if tool == "ScheduleWakeup":
-        # Judged without run state: the polling starts at the design stage,
+        # Judged without run state: the polling starts at the plan stage,
         # before a worktree exists.
         check_wakeup(payload)
         allow()

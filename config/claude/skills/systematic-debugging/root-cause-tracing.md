@@ -49,16 +49,8 @@ after each; the first that leaves it behind is the polluter.
 
 ## Dead end
 
-The trace stops: the value comes from code or data you cannot see (another
-service, a queue payload, a closed library).
-
-1. Instrument one level up — log the input and a stack trace where the bad
-   value enters your code — and run once more, or wait for the next
-   occurrence.
-2. Still no origin: guard the symptom site with validation that fails loudly,
-   with a clear error. Never a silent default, which turns a crash into wrong
-   data. State in your report that the origin is unknown and where the
-   instrumentation sits.
+The trace stops at code or data you cannot see: systematic-debugging, "Dead
+end: no root cause found".
 
 ## Guards after the fix
 

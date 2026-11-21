@@ -31,10 +31,8 @@ into the repo (copy it under `.flow/` if it lives outside), then plan from it.
 
 ## 2. Questions and decisions
 
-Ask one question at a time, each with your recommended default. Facts you look
-up; decisions you ask. Before writing the plan, run the grill scan
-(`grill-gate.md` in this directory): stay silent when nothing is open, grill
-until nothing is.
+Before writing the plan, run the grill scan (`grill-gate.md` in this
+directory): stay silent when nothing is open, grill until nothing is.
 
 Where there is a real fork, give 2–3 options with trade-offs and your
 recommendation. Where there is none, do not invent one.
@@ -119,8 +117,10 @@ spec paths only, then end the turn. Skip it for a single-task plan.
 
 On return: blocking or serious objections go to the user verbatim, with your
 take on each, and get resolved — by amending the plan or by the user accepting
-the risk — before "go". Minor objections only: apply them yourself and name
-them in one line at the gate.
+the risk — before "go". A minor objection: apply it yourself only when it names
+a concrete case of wrong behaviour; drop the rest, one line each at the gate.
+One pass finds a few real bugs among invented ones — keep the bugs, not the
+volume.
 
 Log every objection once the plan is settled, in the project's
 `.flow/reviews/red-team-log.md` (create it if absent), one row each:

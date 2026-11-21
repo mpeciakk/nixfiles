@@ -394,7 +394,7 @@ check "short wakeup naming red-team is denied" deny \
   "$(wakeup_payload "$REPO" 120 "Waiting on plan-red-team subagent to finish its pre-mortem")"
 check "a bare 'agent' plus a completion word is denied" deny \
   "$(wakeup_payload "$REPO" 90 "Waiting on the background research agent" "Check if the agent has completed")"
-# The polling starts at the design stage, so this must not depend on run state.
+# The polling starts at the plan stage, so this must not depend on run state.
 check "denied in a repo with no run state at all" deny \
   "$(wakeup_payload "$COLD" 300 "Waiting on the Task 2 reviewer verdict")"
 check "the sanctioned fallback heartbeat is allowed" allow \

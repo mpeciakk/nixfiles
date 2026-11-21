@@ -15,7 +15,8 @@ Workflow rules:
 1. Process skills (development-workflow for a run, systematic-debugging)
    BEFORE domain skills.
 2. Navigate code with grep/find via Bash + Read; a file you are not editing is
-   read by range, not whole.
+   read by range, not whole — except `spec.md`, read whole (split: the index
+   and the topic files the change touches).
 3. Library/API → context7 MCP: `resolve-library-id`, then `query-docs`; only
    its `authenticate` tools listed → ask me to log it in via `/mcp`. A fact a
    tool can check (SHA, branch state, command output, whether a symbol

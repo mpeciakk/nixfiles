@@ -10,10 +10,9 @@ then one review of the whole branch.
 
 ## Your role
 
-You write the task code. A subagent handed the same task loses what you know
-and re-reads the files you already read; it does not build it better.
-Subagents are for independent read-only work in parallel, output you only need
-the gist of, and review. None of them writes in this tree.
+You write the task code; subagents only read (CLAUDE.md workflow rule 5) — a
+subagent handed the same task loses what you know and does not build it
+better.
 
 ## Before Task 1
 
@@ -90,6 +89,5 @@ Then finishing-a-development-branch.
 
 ## Never
 
-- Let a subagent write in the run's tree.
 - Redo a task the ledger marks done.
 - Skip the branch review.
