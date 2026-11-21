@@ -24,8 +24,7 @@ Triage: CLAUDE.md → Workflow.
 
 Bootstrap, once per project with no living spec: writing-specs. Not a run.
 
-Always on, any stage: CLAUDE.md "Before writing" and
-`executing-plans/writing-good-tests.md` for what gets a test and when,
+Always on, any stage: CLAUDE.md "Code" for what gets a test and when,
 systematic-debugging for any bug or unexpected result, requesting-code-review
 §3 when acting on findings.
 

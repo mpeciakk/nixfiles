@@ -67,54 +67,53 @@ I ask — I talk to them.
 
 ## Code
 
-For a trivial change (typo, one line) common sense is enough.
+Be lazy about the solution, never about the change: the least new code that
+fully solves the problem, plus every caller, test and fixture it breaks. A
+trivial change (typo, one line): common sense.
 
 Before writing:
-- Turn the task into a checkable goal and decide how you'll check it: each
-  stated behaviour → one focused test; "fix the bug" → a test that reproduces
-  it, failing before the fix; "refactor" → tests green before and after.
-  Then run the real thing, not only the suite.
-- Test-first is the default for a bug fix and for behaviour easy to state as
-  a test; wiring, UI, exploration and refactors are code-first. Before
-  writing or changing tests, read
+- Turn the task into a checkable goal. "Done" is a check you did not write in
+  this change: the existing suite, a test that fails before the bug fix, one
+  focused test per plan acceptance line or behaviour I stated — then the real
+  thing run, not only the suite.
+- Test-first only for a bug fix. A test names the bug it catches, not a
+  decision (no `expect(MAX_RETRIES).toBe(5)`); real code over mocks; none for
+  impossible cases. Never weaken or delete a failing test to get green; if it
+  contradicts the spec, say so. Mocks or doubt:
   `~/.claude/skills/executing-plans/writing-good-tests.md`.
-- List every place the change must reach: callers, tests, fixtures, config,
-  exports. Check what it can break: data it would destroy or expose, callers
-  that stop working.
+- List every place the change must reach (callers, tests, fixtures, config,
+  exports) and what it can break (data destroyed or exposed, callers).
+- Before writing a function, grep for one that already does the job — by
+  what it does (the format, the check, the query), not only by its name.
 - Bug fix: grep every caller of the function you touch and fix the root cause
   once, in the shared code — not in one of the callers.
 
 Choosing the solution — take the first option that fully works:
 1. Does it need to exist? Don't build features, options or flexibility nobody
-   asked for — name them in one line. A vague request ("build X") → the
-   smallest version that does the core job.
-2. Already in the repo (helper, component, pattern)? Use it the way the
-   surrounding code does.
-3. Standard library or platform? Use it, unless the project has its own.
+   asked for — name them in one line. Vague request → the smallest version.
+2. Already in the repo? Call it the way the surrounding code does; if it is
+   close, extend it (a parameter, a branch) instead of writing a sibling.
+3. Stdlib or platform? Use it (house component > native widget > hand-built).
 4. An installed dependency? Use it. Never add a dependency for a few lines.
-5. Otherwise: the minimum code that works. If 200 lines could be 50, rewrite.
+5. Otherwise the minimum code that works. If 200 lines could be 50, rewrite;
+   a one-liner that needs decoding is not short.
 
 While writing:
-- Nothing beyond what was asked: no abstraction for single-use code, no
-  unrequested option, config, wrapper, type conversion or "for later" code, no
-  handling of impossible cases. Deletion beats addition.
-- Lazy about the solution, never about the change: finish everything it
-  requires, including the callers, tests and fixtures it breaks.
+- No abstraction with one caller, no unrequested option, config, wrapper,
+  type conversion or "for later" code, no handling of impossible cases.
+- Never write the same logic twice: a second copy of a block, format,
+  validation or query calls or extends the first. Near-copies already there:
+  merge them only when your fix would otherwise go into each; else report.
 - Between two options of equal size, take the one correct at the edges (empty,
   zero, last item, rounding, time zones).
 - Code you move or merge keeps its validation and error handling.
-- Comment only the why the code can't show, in one line.
-- A shortcut with a known limit gets a comment `shortcut: <limit>, <when to
-  upgrade>`.
+- Comment only the why the code can't show, in one line. A shortcut with a
+  known limit gets `shortcut: <limit>, <when to upgrade>`.
 - Never cut: validation at trust boundaries, error handling that prevents data
   loss, security, accessibility, anything I asked for.
-
-Surgical changes:
-- Every changed line traces directly to the request. Don't "improve" adjacent
-  code, comments or formatting; don't refactor what works.
-- Keep the existing style and structure: layers, interfaces, conventions.
-- Report pre-existing dead code, don't delete it. Delete only the imports,
-  variables and functions your change orphaned.
+- Every changed line traces to the request: leave unrelated code, comments
+  and formatting alone; keep the existing layers, interfaces, conventions.
+  Report pre-existing dead code; delete what your change orphaned.
 
 ## Candor
 

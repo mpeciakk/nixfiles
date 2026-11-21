@@ -68,8 +68,9 @@ Untracked artifacts from these runs are fine; changes to tracked files are not.
 - **Tests.** Do they test behaviour rather than mocks, and could they fail? An
   expected value computed the way the code computes it passes by
   construction — it must come from somewhere independent (a literal, a worked
-  example, the spec). Do not ask for tests of impossible cases or of what
-  another test already pins.
+  example, the spec). A test weakened, skipped or deleted in this change to
+  get green is Critical unless the plan or the user asked for it. Do not ask
+  for tests of impossible cases or of what another test already pins.
 - **Quality and safety.** Separation of concerns, error handling, security and
   data handling, migrations and deploy order if a contract or schema changed.
   Comments that record history or argue with a reviewer instead of explaining
@@ -82,7 +83,8 @@ Untracked artifacts from these runs are fine; changes to tracked files are not.
   unused options, speculative features; a helper the repo already has (name
   the path); the standard library or platform already does it, or a new
   dependency for a few lines; an abstraction with one implementation, config
-  nobody sets; near-copies that must change together. A comment
+  nobody sets; near-copies that must change together; one function doing
+  unrelated jobs (split by job, never by line count). A comment
   `shortcut: <limit>, <when to upgrade>` is a decision, not a finding, unless
   the expected load already crosses the limit.
 
