@@ -4,6 +4,8 @@
 
   nix = {
     channel.enable = false;
+    # SCHED_IDLE for builds: the lever sched_ext honours (it ignores cgroup cpu.weight)
+    daemonCPUSchedPolicy = "idle";
 
     settings = {
       experimental-features = ["nix-command" "flakes"];
@@ -25,4 +27,7 @@
   };
   # programs.nh sets it only in /etc/set-environment, which a nushell TTY login never reads
   environment.sessionVariables.NH_FLAKE = config.programs.nh.flake;
+
+  # builds yield the CPU: the service cgroup gets cpu.idle next to user.slice
+  systemd.services.nix-daemon.serviceConfig.CPUWeight = "idle";
 }
