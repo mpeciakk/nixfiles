@@ -51,4 +51,7 @@
     options hid_apple fnmode=2
   '';
   boot.blacklistedKernelModules = ["ucsi_ccg"];
+
+  # dhcpcd 10.3.2 segfaults in ipv6nd_expire when a Docker veth vanishes (fixed upstream in 10.5.1)
+  networking.dhcpcd.denyInterfaces = ["veth*" "docker*" "br-*"];
 }
