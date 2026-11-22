@@ -50,7 +50,8 @@
     # Keychron K8 reports Apple's vendor id; fnmode=2 makes F1-F12 primary, media under Fn
     options hid_apple fnmode=2
   '';
-  boot.blacklistedKernelModules = ["ucsi_ccg"];
+  # gigabyte_wmi: BIOS F2 fails every WMI sensor query (12 ACPI errors per boot), then the driver gives up
+  boot.blacklistedKernelModules = ["ucsi_ccg" "gigabyte_wmi"];
 
   # fork at once, so greetd (Type=idle) stops waiting for the lease;
   # network-online.target is then reached before an address is up
