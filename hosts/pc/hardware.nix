@@ -5,7 +5,7 @@
   ...
 }: {
   nixpkgs.overlays = [inputs.nix-cachyos-kernel.overlays.pinned];
-  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-bore-lto-x86_64-v3;
+  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-bore-lto;
   nix.settings = {
     extra-substituters = ["https://cache.lantian.pub/lantian"];
     extra-trusted-public-keys = ["lantian:WVGO7vsRMSEN+h7Lp7kv6SAmrkEXgUGbbXm7jMDjBuQ="];
@@ -14,7 +14,8 @@
   boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usbhid" "sd_mod"];
   boot.kernelModules = ["kvm-intel"];
   # stable machine-id from the DMI UUID (laptop lacks one, see rollback-root)
-  boot.kernelParams = ["systemd.machine_id=firmware"];
+  # mem_profiling: allocation tagging is on by default in the CachyOS config; off as on Arch
+  boot.kernelParams = ["systemd.machine_id=firmware" "sysctl.vm.mem_profiling=never"];
   hardware.cpu.intel.updateMicrocode = true;
   hardware.enableRedistributableFirmware = true;
 
