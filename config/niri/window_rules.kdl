@@ -24,8 +24,10 @@ window-rule {
     block-out-from "screencast"
 }
 
+// DP-2 runs VRR on-demand (output.kdl): it turns on only while one of these windows is shown
 window-rule {
     match title=".*Minecraft.*"
+    match title="^World of Warcraft$"
     variable-refresh-rate true
 }
 
