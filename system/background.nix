@@ -1,7 +1,7 @@
 {
+  # no IOWeight: with the NVMe scheduler "none" io.weight does nothing (it needs BFQ or iocost)
   systemd.slices.background.sliceConfig = {
     CPUWeight = "idle";
-    IOWeight = 1;
   };
 
   systemd.services = {
