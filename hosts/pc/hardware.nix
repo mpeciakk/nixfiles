@@ -43,10 +43,8 @@
   services.acpid.enable = false;
   environment.sessionVariables = {
     __GL_SHADER_DISK_CACHE_SIZE = "12000000000";
-    LIBVA_DRIVER_NAME = "nvidia";
-    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+    # libva, libvdpau and glvnd pick nvidia on their own; GBM_BACKEND stays, niri's GBM loader may read it
     GBM_BACKEND = "nvidia-drm";
-    VDPAU_DRIVER = "nvidia";
   };
   boot.extraModprobeConfig = ''
     options nvidia NVreg_InitializeSystemMemoryAllocations=0
