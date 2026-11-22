@@ -1,6 +1,7 @@
 {
   config,
   inputs,
+  lib,
   pkgs,
   ...
 }: {
@@ -12,7 +13,11 @@
   };
 
   boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usbhid" "sd_mod"];
-  boot.kernelModules = ["kvm-intel"];
+  boot.kernelModules = {
+    "kvm-intel" = true;
+    # NixOS loads it for PS/2 keyboards; every keyboard here is USB
+    atkbd = lib.mkForce false;
+  };
   # stable machine-id from the DMI UUID (laptop lacks one, see rollback-root)
   # mem_profiling: allocation tagging is on by default in the CachyOS config; off as on Arch
   boot.kernelParams = ["systemd.machine_id=firmware" "sysctl.vm.mem_profiling=never"];
@@ -52,8 +57,24 @@
     # Keychron K8 reports Apple's vendor id; fnmode=2 makes F1-F12 primary, media under Fn
     options hid_apple fnmode=2
   '';
-  # gigabyte_wmi: BIOS F2 fails every WMI sensor query (12 ACPI errors per boot), then the driver gives up
-  boot.blacklistedKernelModules = ["ucsi_ccg" "gigabyte_wmi"];
+  boot.blacklistedKernelModules = [
+    "ucsi_ccg"
+    # BIOS F2 fails every WMI sensor query (12 ACPI errors per boot), then the driver gives up
+    "gigabyte_wmi"
+    # autoloaded by alias with nothing to drive: SOF/AVS match the PCH audio that snd_hda_intel owns,
+    # the ME HDCP/PXP clients serve i915, which does not run here, i2c_nvidia_gpu only feeds ucsi_ccg,
+    # the Keychron fakes Apple's vendor id, nothing sits on the parallel port
+    "snd_sof_pci_intel_cnl"
+    "snd_soc_avs"
+    "mei_hdcp"
+    "mei_pxp"
+    "i2c_nvidia_gpu"
+    "apple_mfi_fastcharge"
+    "parport_pc"
+    # Wi-Fi and Bluetooth unused: wired network, no bluetooth service
+    "iwlwifi"
+    "btusb"
+  ];
 
   # fork at once, so greetd (Type=idle) stops waiting for the lease;
   # network-online.target is then reached before an address is up
