@@ -29,6 +29,9 @@
     NIXOS_OZONE_WL = "1";
     # Qt file dialogs (Prism Launcher) through the portal, i.e. yazi
     QT_QPA_PLATFORMTHEME = "xdgdesktopportal";
+    # speechd is off; Legcord forces --enable-speech-dispatcher and libspeechd's autospawn of the
+    # missing binary aborts Chromium's forked child, while a command that exists fails cleanly
+    SPEECHD_CMD = "${pkgs.coreutils}/bin/false";
   };
 
   security.soteria.enable = true;
