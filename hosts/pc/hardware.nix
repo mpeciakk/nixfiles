@@ -52,6 +52,12 @@
   '';
   boot.blacklistedKernelModules = ["ucsi_ccg"];
 
+  # fork at once, so greetd (Type=idle) stops waiting for the lease;
+  # network-online.target is then reached before an address is up
+  networking.dhcpcd.wait = "background";
+  # same DUID and lease across boots (the @root rollback wipes /var/lib)
+  persist.directories."/var/lib/dhcpcd" = "0755";
+
   # dhcpcd 10.3.2 segfaults in ipv6nd_expire when a Docker veth vanishes (fixed upstream in 10.5.1)
   networking.dhcpcd.denyInterfaces = ["veth*" "docker*" "br-*"];
 }
