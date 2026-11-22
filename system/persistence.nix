@@ -44,7 +44,11 @@
       '')
       config.persist.directories);
 
-    services.journald.settings.Journal.Storage = "persistent";
+    services.journald.settings.Journal = {
+      Storage = "persistent";
+      # without it the cap is 10% of the filesystem, up to 4 GiB
+      SystemMaxUse = "1G";
+    };
 
     # its only rules are btmp and wtmp, which the @root rollback wipes at every boot
     services.logrotate.enable = false;
