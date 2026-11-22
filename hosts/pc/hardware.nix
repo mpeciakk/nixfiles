@@ -37,6 +37,10 @@
     };
   };
   services.btrfs.autoScrub.fileSystems = ["/mnt/backup"];
+  # the backup disk idles between manual copies and the monthly scrub: standby after 10 min (-S 120 = 120 x 5 s)
+  services.udev.extraRules = ''
+    ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd[a-z]", ENV{ID_MODEL}=="TOSHIBA_HDWD110", RUN+="${pkgs.hdparm}/bin/hdparm -S 120 /dev/%k"
+  '';
 
   services.xserver.videoDrivers = ["nvidia"];
   hardware.graphics.enable32Bit = true;
@@ -71,8 +75,9 @@
     "i2c_nvidia_gpu"
     "apple_mfi_fastcharge"
     "parport_pc"
-    # Wi-Fi and Bluetooth unused: wired network, no bluetooth service
+    # Wi-Fi and Bluetooth unused: wired network, no bluetooth service; cfg80211 still came in through its nl80211 alias
     "iwlwifi"
+    "cfg80211"
     "btusb"
   ];
 
