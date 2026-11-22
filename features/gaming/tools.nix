@@ -1,5 +1,7 @@
 {pkgs, ...}: {
   programs.gamemode.enable = true;
+  # GE-Proton via umu sets WINENTSYNC=1 on its own; the module has no devname alias, so nothing loads it on demand
+  boot.kernelModules = ["ntsync"];
   users.users.m.extraGroups = ["gamemode"];
 
   hjem.users.m.packages = with pkgs; [
