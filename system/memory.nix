@@ -13,6 +13,9 @@
     "vm.dirty_background_bytes" = 67108864;
   };
 
+  # the NixOS module starts the daemon but enables no slice, so it watches nothing
+  systemd.oomd.enable = false;
+
   services.btrfs.autoScrub = {
     enable = true;
     interval = "monthly";
