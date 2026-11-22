@@ -7,6 +7,8 @@
   programs.niri = {
     enable = true;
     package = inputs.biri.packages.${pkgs.stdenv.hostPlatform.system}.niri.overrideAttrs {doCheck = false;};
+    # the file picker is termfilechooser; nautilus would only back the gnome portal's FileChooser
+    useNautilus = false;
   };
 
   programs.uwsm = {
@@ -36,6 +38,8 @@
   '');
 
   services.gnome.gcr-ssh-agent.enable = false;
+  # graphical-desktop turns it on (mkDefault) for screen readers; 700 MB closure, only Legcord wakes it
+  services.speechd.enable = false;
 
   # explicit preference so the portal reports light rather than "no preference"
   programs.dconf.profiles.user.databases = [{settings."org/gnome/desktop/interface".color-scheme = "prefer-light";}];
@@ -47,7 +51,8 @@
     enable = true;
     extraPortals = [pkgs.xdg-desktop-portal-gnome pkgs.xdg-desktop-portal-termfilechooser];
     # the rest of config.niri comes from the NixOS niri module
-    config.niri."org.freedesktop.impl.portal.FileChooser" = "termfilechooser";
+    # mkForce: with useNautilus = false the niri module sets FileChooser = "gtk"
+    config.niri."org.freedesktop.impl.portal.FileChooser" = lib.mkForce "termfilechooser";
   };
 
   # file picker = yazi in kitty; no --single-instance, it would return before the choice is made.

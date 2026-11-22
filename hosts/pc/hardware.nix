@@ -37,7 +37,10 @@
   hardware.nvidia = {
     open = true;
     package = config.boot.kernelPackages.nvidiaPackages.latest;
+    nvidiaSettings = false;
   };
+  # the nvidia module turns acpid on (mkDefault) for X-era ACPI events; logind handles the power key
+  services.acpid.enable = false;
   environment.sessionVariables = {
     __GL_SHADER_DISK_CACHE_SIZE = "12000000000";
     LIBVA_DRIVER_NAME = "nvidia";

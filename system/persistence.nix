@@ -46,6 +46,9 @@
 
     services.journald.settings.Journal.Storage = "persistent";
 
+    # its only rules are btmp and wtmp, which the @root rollback wipes at every boot
+    services.logrotate.enable = false;
+
     boot.initrd.systemd.services.rollback-root = {
       description = "Rollback btrfs @root do @root-blank";
       wantedBy = ["initrd.target"];

@@ -46,7 +46,7 @@
           Name=${n}
           Hidden=true
         '';
-      }) ["nvim" "nvidia-settings" "uuctl"])
+      }) ["nvim" "uuctl"])
       // {
         # xdg-open outside a DE ignores Terminal=true and runs yazi without a tty, so the terminal goes into Exec
         "applications/yazi.desktop".text = ''
