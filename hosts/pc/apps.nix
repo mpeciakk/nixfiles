@@ -15,5 +15,6 @@
     pkgs.pwvucontrol
     pkgs.obsidian
     pkgs.spotify
+    (pkgs.callPackage ../../pkgs/ladybird-alpha/package.nix {})
   ];
 }
