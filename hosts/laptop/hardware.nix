@@ -127,6 +127,11 @@
 
   hardware.bluetooth.enable = true;
 
+  # nixos-apple-silicon enables it, but the ambient light sensor has no calibration file
+  # (aop-als-cal.bin, extracted only by installers from 2026-03 on) and nothing here does
+  # auto-brightness; the lid angle sensor works through the kernel driver alone
+  hardware.sensor.iio.enable = false;
+
   # Wyspa locks after 300 s idle but leaves the panel lit until the lid closes: 2.9 W at brightness 143
   # (Total System Power, 2026-11-24). Power it off one minute after the lock; input powers it back on.
   hjem.users.m.systemd.services.swayidle = {
