@@ -44,7 +44,30 @@
   boot.loader.systemd-boot.configurationLimit = lib.mkForce 3;
   boot.loader.systemd-boot.editor = false;
 
-  boot.kernelParams = ["appledrm.show_notch=1"];
+  boot.kernelParams = [
+    "appledrm.show_notch=1"
+    # allocation tagging is on by default in this kernel config; off as on pc
+    "sysctl.vm.mem_profiling=never"
+    # KFENCE samples every 100 ms on a non-deferrable timer, waking idle CPUs
+    "kfence.deferrable=1"
+  ];
+
+  # nixos-apple-silicon sets schedutil, which is built in and the kernel default anyway;
+  # the setting only adds cpufreq.service and a failed cpufreq_schedutil load at every boot
+  powerManagement.cpuFreqGovernor = null;
+
+  # battery level around every s2idle, in the sleep-actions unit's journal
+  # (powerDownCommands also run at shutdown, from post-boot)
+  powerManagement.powerDownCommands = ''
+    echo "s2idle-log przed snem: $(cat /sys/class/power_supply/macsmc-battery/capacity)% $(cat /sys/class/power_supply/macsmc-battery/energy_now)uWh"
+  '';
+  powerManagement.resumeCommands = ''
+    echo "s2idle-log po wybudzeniu: $(cat /sys/class/power_supply/macsmc-battery/capacity)% $(cat /sys/class/power_supply/macsmc-battery/energy_now)uWh"
+  '';
+
+  # no LVM or bcache on this disk; both are on by default
+  services.lvm.enable = false;
+  boot.bcache.enable = false;
 
   fileSystems = {
     # Asahi installer's ESP has no label; its UUID survives reinstalls
@@ -61,7 +84,11 @@
     # per-link DNS, so the tunnel can own just *.local.peciak.xyz
     dns = "systemd-resolved";
   };
+  # no WWAN modem in this model; NetworkManager enables ModemManager by default
+  networking.modemmanager.enable = false;
   services.resolved.enable = true;
+  # LLMNR responder and queries on every network; nothing here resolves single-label names through it
+  services.resolved.settings.Resolve.LLMNR = false;
   users.users.m.extraGroups = ["networkmanager"];
 
   # Split tunnel to the home LAN via the WireGuard hub on sirius (~/projects/cloud, "Dostęp zdalny").
@@ -93,6 +120,8 @@
 
   # Quickshell's battery indicator (services/Battery.qml) reads UPower
   services.upower.enable = true;
+  # the NixOS default HybridSleep is unavailable here (no hibernation), so UPower already falls back to PowerOff
+  services.upower.criticalPowerAction = "PowerOff";
 
   persist.directories = {
     "/etc/NetworkManager/system-connections" = "0700";
