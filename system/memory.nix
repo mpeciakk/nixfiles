@@ -1,6 +1,8 @@
 {
   zramSwap = {
     enable = true;
+    # zram-generator takes min(memoryPercent of RAM, memoryMax); at the default 50% the 8 GiB cap never binds on laptop
+    memoryPercent = 100;
     memoryMax = 8 * 1024 * 1024 * 1024;
     priority = 100;
   };
