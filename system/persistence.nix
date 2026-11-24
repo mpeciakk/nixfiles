@@ -15,6 +15,10 @@
       "/var/log/journal" = "0755";
       "/var/lib/hjem" = "0755";
       "/var/lib/systemd/coredump" = "0755";
+      # scrub history (btrfs scrub status)
+      "/var/lib/btrfs" = "0755";
+      # timesyncd moves the clock to this file's mtime before time-set.target, so timers do not fire on a reset RTC
+      "/var/lib/systemd/timesync" = "0755";
     };
 
     fileSystems = let
