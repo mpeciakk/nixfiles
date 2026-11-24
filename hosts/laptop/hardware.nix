@@ -89,6 +89,8 @@
   services.resolved.enable = true;
   # LLMNR responder and queries on every network; nothing here resolves single-label names through it
   services.resolved.settings.Resolve.LLMNR = false;
+  # mDNS resolves and announces on every link, but nixos-fw drops incoming 5353, so it hears no one
+  services.resolved.settings.Resolve.MulticastDNS = false;
   users.users.m.extraGroups = ["networkmanager"];
 
   # Split tunnel to the home LAN via the WireGuard hub on sirius (~/projects/cloud, "Dostęp zdalny").
