@@ -9,6 +9,13 @@
 
   hardware.asahi.enable = true;
   hardware.asahi.peripheralFirmwareDirectory = null;
+  # hardware video decode through VA-API: VP9 1080p costs ~0.25 W less than on the CPU, in mpv and in Helium
+  # (2026-11-24). "all" adds H.264 and HEVC firmware (Jellyfin); the default all_free leaves only VP9 on M2.
+  # Experimental, and sets LIBVA_DRIVER_NAME=asahi for the whole session.
+  hardware.asahi.avd = {
+    vaapi-support = true;
+    codecs = ["all"];
+  };
 
   # fairydust: DP alt mode (monitor przez USB-C); tag asahi-* tego nie ma
   # linux-asahi.override nie przyjmuje src (brak `...`), więc podmiana idzie przez buildLinux
