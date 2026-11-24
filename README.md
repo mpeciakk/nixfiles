@@ -9,7 +9,7 @@ NixOS flake and dotfiles for two machines. `$HOME` is managed by [hjem](https://
 
 ## Highlights
 
-- **Ephemeral root**: an initrd service resets btrfs `@root` from `@root-blank` on every boot and keeps old roots in `@root-old`; each boot prunes those at least 15 days old. Only `@nix`, `@home`, `@persist` and `@nixos-state` survive; system state goes to `/persist` through `persist.directories` bind mounts.
+- **Ephemeral root**: an initrd service resets btrfs `@root` from `@root-blank` on every boot and keeps old roots in `@root-old`; each boot keeps the 10 newest of those (by subvolume ID) and deletes the rest. Only `@nix`, `@home`, `@persist` and `@nixos-state` survive; system state goes to `/persist` through `persist.directories` bind mounts.
 - **Desktop**: [niri](https://github.com/barrulus/biri) (biri fork) under uwsm, greetd + tuigreet, Quickshell shell from a separate repo (`~/projects/quickshell-dynamic-island`).
 - **Shell**: nushell with atuin, zoxide and carapace; sudo-rs instead of sudo. `m` is in the `docker` group, which is root without a password: any process running as `m` can `docker run -v /:/h` and bypass sudo-rs.
 - **Live dotfiles**: `config/` and `bin/` are symlinked to the repo checkout, not the store, so edits apply without a rebuild.

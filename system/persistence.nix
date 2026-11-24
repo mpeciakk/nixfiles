@@ -82,17 +82,29 @@
 
         if [ -e /btrfs/@root ]; then
           mkdir -p /btrfs/@root-old
-          # initrd has no /etc/localtime, so date prints UTC; the Z keeps it from passing for local time
-          stamp=$(date -u --date="@$(stat -c %Y /btrfs/@root)" +%Y-%m-%d_%H%M%SZ)
-          mv /btrfs/@root "/btrfs/@root-old/$stamp"
-          # mv keeps the boot-time mtime; without touch a long-uptime root would be pruned immediately
-          touch "/btrfs/@root-old/$stamp" || true
+          # initrd has no /etc/localtime, so date prints UTC; the Z keeps it from passing for local time.
+          # The subvolume ID makes the name unique: on laptop the initrd clock starts at the same
+          # date every boot, and two stamps have already landed one second apart.
+          id=$(btrfs inspect-internal rootid /btrfs/@root)
+          stamp=$(date -u --date="@$(stat -c %Y /btrfs/@root)" +%Y-%m-%d_%H%M%SZ)-$id
+          # -T: an existing name is an error instead of a move into that archive
+          mv -T /btrfs/@root "/btrfs/@root-old/$stamp"
         fi
         mv /btrfs/@root-new /btrfs/@root
 
-        # prune last: a failed delete must not leave the system without @root
-        ${pkgs.findutils}/bin/find /btrfs/@root-old -mindepth 1 -maxdepth 1 -mtime +14 \
-          -exec btrfs subvolume delete --recursive {} +
+        # prune last: a failed delete must not leave the system without @root.
+        # Keep the 10 newest by subvolume ID (IDs only grow); age by mtime does not work on laptop,
+        # whose initrd clock is the same at every boot.
+        for d in /btrfs/@root-old/*; do
+          # only subvolume roots (inode 256); a plain directory or a failed rootid would sort first
+          [ "$(stat -c %i "$d")" = 256 ] || continue
+          id=$(btrfs inspect-internal rootid "$d") || continue
+          [ -n "$id" ] || continue
+          printf '%s %s\n' "$id" "$d"
+        done | sort -n | head -n -10 | cut -d' ' -f2- |
+          while IFS= read -r d; do
+            btrfs subvolume delete --recursive "$d" || true
+          done
         umount /btrfs
       '';
     };
