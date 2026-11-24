@@ -38,6 +38,9 @@
     };
   };
 in {
+  # keyd exits with 15 on SIGTERM, which made every shutdown log a failed unit
+  systemd.services.keyd.serviceConfig.SuccessExitStatus = "15";
+
   services.keyd = {
     enable = true;
     keyboards.default = {
