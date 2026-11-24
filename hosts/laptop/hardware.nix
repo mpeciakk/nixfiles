@@ -118,6 +118,18 @@
 
   hardware.bluetooth.enable = true;
 
+  # Wyspa locks after 300 s idle but leaves the panel lit until the lid closes: 2.9 W at brightness 143
+  # (Total System Power, 2026-11-24). Power it off one minute after the lock; input powers it back on.
+  hjem.users.m.systemd.services.swayidle = {
+    description = "Power off the panel after idle";
+    after = ["graphical-session.target"];
+    partOf = ["graphical-session.target"];
+    wantedBy = ["graphical-session.target"];
+    serviceConfig.ExecStart = let
+      niri = "${config.programs.niri.package}/bin/niri";
+    in "${pkgs.swayidle}/bin/swayidle -w timeout 360 '${niri} msg action power-off-monitors' resume '${niri} msg action power-on-monitors'";
+  };
+
   # Quickshell's battery indicator (services/Battery.qml) reads UPower
   services.upower.enable = true;
   # the NixOS default HybridSleep is unavailable here (no hibernation), so UPower already falls back to PowerOff
