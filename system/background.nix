@@ -1,5 +1,5 @@
 {
-  # no IOWeight: with the NVMe scheduler "none" io.weight does nothing (it needs BFQ or iocost)
+  # no IOWeight: neither "none" (pc) nor mq-deadline (laptop) implements io.weight (it needs BFQ or iocost)
   systemd.slices.background.sliceConfig = {
     CPUWeight = "idle";
   };

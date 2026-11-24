@@ -21,6 +21,8 @@
   # stable machine-id from the DMI UUID (laptop lacks one, see rollback-root)
   # mem_profiling: allocation tagging is on by default in the CachyOS config; off as on Arch
   boot.kernelParams = ["systemd.machine_id=firmware" "sysctl.vm.mem_profiling=never"];
+  # laptop: nixos-apple-silicon forces it off (U-Boot has no EFI variables)
+  boot.loader.efi.canTouchEfiVariables = true;
   hardware.cpu.intel.updateMicrocode = true;
   hardware.enableRedistributableFirmware = true;
 
