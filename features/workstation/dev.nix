@@ -22,6 +22,8 @@
       typescript-language-server
       typescript
       pyright
+      # nvim's tinymist sits only on its wrapper's PATH; Claude Code needs the CLI to compile and render .typ
+      typst
     ];
 
     xdg.config.files."uv/uv.toml".text = ''
