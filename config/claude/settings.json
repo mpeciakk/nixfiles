@@ -162,7 +162,9 @@
     "session-report@claude-plugins-official": true,
     "cloudflare@cloudflare": false,
     "text-to-cad@earthtojake": false,
-    "codex@openai-codex": true
+    "codex@openai-codex": true,
+    "antialgorithm@antialgorithm": true,
+    "gopls-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "context7-marketplace": {
@@ -194,6 +196,12 @@
       "source": {
         "source": "github",
         "repo": "AgriciDaniel/claude-seo"
+      }
+    },
+    "antialgorithm": {
+      "source": {
+        "source": "github",
+        "repo": "mankidev/antialgorithm"
       }
     }
   },
