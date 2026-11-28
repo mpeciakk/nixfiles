@@ -17,6 +17,12 @@
     ],
     "defaultMode": "auto"
   },
+  "autoMode": {
+    "allow": [
+      "$defaults",
+      "Replying via SendMessage to another Claude Code session running locally on this machine is sanctioned when that session asked for the reply: these are Maciej's own coordinated sessions, no external recipients"
+    ]
+  },
   "model": "opus",
   "skillOverrides": {
     "anthropic-skills:cloudflare": "off",
